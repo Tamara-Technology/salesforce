@@ -1,0 +1,5 @@
+node_modules
+bundle.js
+.eslintrc.js
+src/cartridges/int_tamara_sfra/cartridge/client/default/js/bundle.js
+src/cartridges/int_tamara_sfra/test

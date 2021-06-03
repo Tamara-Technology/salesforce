@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata xmlns="http://www.demandware.com/xml/impex/metadata/2006-10-31">
+    <custom-type type-id="TamaraPaymentTypes">
+        <display-name xml:lang="x-default">TamaraPaymentTypes</display-name>
+        <description xml:lang="x-default">Available Payment Types for merchant</description>
+        <staging-mode>no-staging</staging-mode>
+        <storage-scope>site</storage-scope>
+        <key-definition attribute-id="ID">
+            <type>string</type>
+            <min-length>0</min-length>
+        </key-definition>
+        <attribute-definitions>
+            <attribute-definition attribute-id="content">
+                <display-name xml:lang="x-default">Content</display-name>
+                <description xml:lang="x-default">List of payment types</description>
+                <type>text</type>
+                <localizable-flag>false</localizable-flag>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+            </attribute-definition>
+        </attribute-definitions>
+        <group-definitions>
+            <attribute-group group-id="PaymentTypes">
+                <display-name xml:lang="x-default">PaymentTypes</display-name>
+                <attribute attribute-id="ID"/>
+                <attribute attribute-id="content"/>
+                <attribute attribute-id="creationDate" system="true"/>
+                <attribute attribute-id="lastModified" system="true"/>
+            </attribute-group>
+        </group-definitions>
+    </custom-type>
+
+</metadata>

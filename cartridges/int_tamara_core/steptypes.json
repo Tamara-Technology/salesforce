@@ -1,0 +1,44 @@
+{
+    "step-types": {
+        "script-module-step": [
+            {
+                "@type-id": "custom.CaptureShippedOrder",
+                "module": "int_tamara_core/cartridge/scripts/jobs/CaptureShippedOrder",
+                "supports-organization-context": false,
+                "function": "execute",
+                "parameters": {
+                    "parameters": [
+                        {
+                            "@name": "tamaraOrderStatus",
+                            "@type": "string",
+                            "@required": "true",
+                            "description": "Tamara Status of Order. Split by `|`. Ex: authorised|approved"
+                        },
+                        {
+                            "@name": "limitOrderQuery",
+                            "@type": "double",
+                            "@required": "true",
+                            "description": "The limit order for one batch job"
+                        }
+                    ]
+                },
+                "status-codes": {
+                    "status": [
+                        {
+                            "@code": "ERROR",
+                            "description": "Used when an error occurred."
+                        },
+                        {
+                            "@code": "OK",
+                            "description": "Used when everything went well."
+                        },
+                        {
+                            "@code": "WARN",
+                            "description": "Used when small, but acceptable problems occurred."
+                        }
+                    ]
+                }
+            }
+        ]
+    }
+}

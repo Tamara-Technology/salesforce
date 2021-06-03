@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<payment-settings xmlns="http://www.demandware.com/xml/impex/paymentsettings/2009-09-15">
+
+    <payment-method method-id="TAMARA_PAYLATER">
+        <name xml:lang="x-default">Paylater</name>
+        <image>tamara-icon.png</image>
+        <enabled-flag>true</enabled-flag>
+        <processor-id>TAMARA</processor-id>
+    </payment-method>
+
+    <payment-method method-id="TAMARA_INSTALMENTS">
+        <name xml:lang="x-default">Installment</name>
+        <image>tamara-icon.png</image>
+        <enabled-flag>true</enabled-flag>
+        <processor-id>TAMARA</processor-id>
+    </payment-method>
+</payment-settings>

@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<services xmlns="http://www.demandware.com/xml/impex/services/2014-09-26">
+    <service-credential service-credential-id="tamara.checkout.paymenttypes.cred">
+        <url>/checkout/payment-types</url>
+        <user-id/>
+        <password masked="true">********</password>
+    </service-credential>
+
+    <service-credential service-credential-id="tamara.checkout.session.cred">
+        <url>/checkout</url>
+        <user-id/>
+        <password masked="true">********</password>
+    </service-credential>
+
+    <service-credential service-credential-id="tamara.order.authorised.cred">
+        <url>/orders/{orderId}/authorise</url>
+        <user-id/>
+        <password masked="true">********</password>
+    </service-credential>
+
+    <service-credential service-credential-id="tamara.order.cancel.cred">
+        <url>/merchants/orders/{orderId}/cancel</url>
+        <user-id/>
+        <password masked="true">********</password>
+    </service-credential>
+
+    <service-credential service-credential-id="tamara.order.detail.cred">
+        <url>/merchants/orders/{orderReferenceId}</url>
+        <user-id/>
+        <password masked="true">********</password>
+    </service-credential>
+
+    <service-credential service-credential-id="tamara.payment.capture.cred">
+        <url>/merchants/orders/{orderId}/capture</url>
+        <user-id/>
+        <password masked="true">********</password>
+    </service-credential>
+
+    <service-credential service-credential-id="tamara.payment.refund.cred">
+        <url>/merchants/orders/{orderId}/refund</url>
+        <user-id/>
+        <password masked="true">********</password>
+    </service-credential>
+
+    <service-credential service-credential-id="tamara.webhook.register.cred">
+        <url>/webhooks</url>
+        <user-id/>
+        <password masked="true">********</password>
+    </service-credential>
+
+    <service-profile service-profile-id="tamara.prof">
+        <timeout-millis>30000</timeout-millis>
+        <rate-limit-enabled>false</rate-limit-enabled>
+        <rate-limit-calls>0</rate-limit-calls>
+        <rate-limit-millis>0</rate-limit-millis>
+        <cb-enabled>false</cb-enabled>
+        <cb-calls>0</cb-calls>
+        <cb-millis>0</cb-millis>
+    </service-profile>
+
+    <service service-id="tamara.checkout.paymenttypes">
+        <service-type>HTTP</service-type>
+        <enabled>true</enabled>
+        <log-prefix>tamaraAPIStatus</log-prefix>
+        <comm-log-enabled>true</comm-log-enabled>
+        <force-prd-enabled>true</force-prd-enabled>
+        <mock-mode-enabled>false</mock-mode-enabled>
+        <profile-id>tamara.prof</profile-id>
+        <credential-id>tamara.checkout.paymenttypes.cred</credential-id>
+    </service>
+
+    <service service-id="tamara.checkout.session">
+        <service-type>HTTP</service-type>
+        <enabled>true</enabled>
+        <log-prefix>tamaraAPIStatus</log-prefix>
+        <comm-log-enabled>true</comm-log-enabled>
+        <force-prd-enabled>true</force-prd-enabled>
+        <mock-mode-enabled>false</mock-mode-enabled>
+        <profile-id>tamara.prof</profile-id>
+        <credential-id>tamara.checkout.session.cred</credential-id>
+    </service>
+
+    <service service-id="tamara.order.authorised">
+        <service-type>HTTP</service-type>
+        <enabled>true</enabled>
+        <log-prefix>tamaraAPIStatus</log-prefix>
+        <comm-log-enabled>false</comm-log-enabled>
+        <force-prd-enabled>true</force-prd-enabled>
+        <mock-mode-enabled>false</mock-mode-enabled>
+        <profile-id>tamara.prof</profile-id>
+        <credential-id>tamara.order.authorised.cred</credential-id>
+    </service>
+
+    <service service-id="tamara.order.cancel">
+        <service-type>HTTP</service-type>
+        <enabled>true</enabled>
+        <log-prefix>tamaraAPIStatus</log-prefix>
+        <comm-log-enabled>false</comm-log-enabled>
+        <force-prd-enabled>true</force-prd-enabled>
+        <mock-mode-enabled>false</mock-mode-enabled>
+        <profile-id>tamara.prof</profile-id>
+        <credential-id>tamara.order.cancel.cred</credential-id>
+    </service>
+
+    <service service-id="tamara.order.detail">
+        <service-type>HTTP</service-type>
+        <enabled>true</enabled>
+        <log-prefix>tamaraAPIStatus</log-prefix>
+        <comm-log-enabled>false</comm-log-enabled>
+        <force-prd-enabled>true</force-prd-enabled>
+        <mock-mode-enabled>false</mock-mode-enabled>
+        <profile-id>tamara.prof</profile-id>
+        <credential-id>tamara.order.detail.cred</credential-id>
+    </service>
+
+    <service service-id="tamara.payment.capture">
+        <service-type>HTTP</service-type>
+        <enabled>true</enabled>
+        <log-prefix>tamaraAPIStatus</log-prefix>
+        <comm-log-enabled>false</comm-log-enabled>
+        <force-prd-enabled>true</force-prd-enabled>
+        <mock-mode-enabled>false</mock-mode-enabled>
+        <profile-id>tamara.prof</profile-id>
+        <credential-id>tamara.payment.capture.cred</credential-id>
+    </service>
+
+    <service service-id="tamara.payment.refund">
+        <service-type>HTTP</service-type>
+        <enabled>true</enabled>
+        <log-prefix>tamaraAPIStatus</log-prefix>
+        <comm-log-enabled>false</comm-log-enabled>
+        <force-prd-enabled>true</force-prd-enabled>
+        <mock-mode-enabled>false</mock-mode-enabled>
+        <profile-id>tamara.prof</profile-id>
+        <credential-id>tamara.payment.refund.cred</credential-id>
+    </service>
+
+    <service service-id="tamara.webhook.register">
+        <service-type>HTTP</service-type>
+        <enabled>true</enabled>
+        <log-prefix>tamaraAPIStatus</log-prefix>
+        <comm-log-enabled>false</comm-log-enabled>
+        <force-prd-enabled>true</force-prd-enabled>
+        <mock-mode-enabled>false</mock-mode-enabled>
+        <profile-id>tamara.prof</profile-id>
+        <credential-id>tamara.webhook.register.cred</credential-id>
+    </service>
+
+</services>

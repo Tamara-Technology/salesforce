@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jobs xmlns="http://www.demandware.com/xml/impex/jobs/2015-07-01">
+    <job job-id="TamaraCaptureOrderShipped" priority="0">
+        <description/>
+        <parameters/>
+        <flow>
+            <context site-id="RefArch"/>
+            <step step-id="CaptureShippedOrder" type="custom.CaptureShippedOrder" enforce-restart="false">
+                <description>Query Orders With conditions: OrderStatus=Open &amp; NEW, ShippingStatus=Shipped, PaymentStatus=NotPaid And the TamaraStatus=`tamaraOrderStatus`</description>
+                <parameters>
+                    <parameter name="tamaraOrderStatus">authorised|updated|partially_refunded|partially_captured</parameter>
+                    <parameter name="limitOrderQuery">30</parameter>
+                </parameters>
+                <rules>
+                    <on-exit status="ERROR">
+                        <stop-job/>
+                    </on-exit>
+                </rules>
+            </step>
+        </flow>
+        <rules/>
+        <triggers>
+            <run-recurring enabled="true">
+                <recurrence>
+                    <date-from>2021-04-26Z</date-from>
+                    <start-time>04:58:35.000Z</start-time>
+                    <interval>15m</interval>
+                    <day-of-week>
+                        <weekday>Sunday</weekday>
+                        <weekday>Thursday</weekday>
+                        <weekday>Tuesday</weekday>
+                        <weekday>Monday</weekday>
+                        <weekday>Wednesday</weekday>
+                        <weekday>Saturday</weekday>
+                        <weekday>Friday</weekday>
+                    </day-of-week>
+                </recurrence>
+            </run-recurring>
+        </triggers>
+    </job>
+
+
+</jobs>

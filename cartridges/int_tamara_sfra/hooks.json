@@ -1,0 +1,12 @@
+{
+    "hooks": [
+        {
+            "name": "app.payment.form.processor.tamara",
+            "script": "./cartridge/scripts/hooks/payment/processor/tamara_form_processor"
+        },
+        {
+            "name": "app.payment.processor.tamara",
+            "script": "./cartridge/scripts/hooks/payment/processor/tamara"
+        }
+    ]
+}

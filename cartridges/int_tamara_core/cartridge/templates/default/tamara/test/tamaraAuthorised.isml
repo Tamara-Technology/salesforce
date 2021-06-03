@@ -1,0 +1,13 @@
+<p><b>Request</b></p>
+<pre>
+    <code>
+        ${JSON.stringify(pdict.requestObject)}
+    </code>
+</pre>
+<hr/>
+<p><b>Result</b></p>
+<pre>
+    <code>
+        ${JSON.stringify(pdict.resultObject)}
+    </code>
+</pre>

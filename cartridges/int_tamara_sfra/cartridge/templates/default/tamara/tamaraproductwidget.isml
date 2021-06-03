@@ -1,0 +1,32 @@
+<iscomment>
+TamaraBlock - Display the Tamara Tooltip on PDP
+The tooltip will not display if:
+1. It is product set
+2. The product has a tier of prices
+3. The product has a range of prices
+Merchant can update your logic in the condition below.
+</iscomment>
+<isset name="price" value="${product.price}" scope="page" />
+<isif condition="${pdict.product.productType !== 'set' && !price.type && price.sales}">
+    <isscript>
+        var tamaraHelper = require('*/cartridge/scripts/util/tamaraHelper');
+        var widget = tamaraHelper.getProductWidget(price);
+    </isscript>
+    <isif condition="${widget}">
+        <div class="col-sm-12">
+            <isprint value="${widget}" encoding="off" />
+        </div>
+        <script charset="utf-8" src="https://cdn.tamara.co/widget/product-widget.min.js"></script>
+        <script>
+            var timer = setTimeout(() => {
+                if (window.TamaraProductWidget) {
+                    window.TamaraProductWidget.init({ 
+                        lang: '${tamaraHelper.getCurrentLangCode()}'
+                    })
+                    window.TamaraProductWidget.render()
+                    clearTimeout(timer);
+                }
+            }, 500)
+        </script>
+    </isif>
+</isif>

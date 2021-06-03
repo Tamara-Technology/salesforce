@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<library xmlns="http://www.demandware.com/xml/impex/library/2006-10-31" library-id="RefArchSharedLibrary">
+    <content content-id="tamara-instalments-callout">
+        <display-name xml:lang="x-default">Tamara instalment payment</display-name>
+        <online-flag>true</online-flag>
+        <searchable-flag>false</searchable-flag>
+        <page-attributes/>
+        <custom-attributes>
+            <custom-attribute attribute-id="body" xml:lang="x-default">&lt;div style="text-align: center;"&gt; &lt;svg xmlns="http://www.w3.org/2000/svg" width="102" height="52" viewBox="-270.8 371 102 52" enable-background="new -270.8 371 102 52"&gt; &lt;path stroke="#B2B2B2" stroke-width="2" stroke-miterlimit="10" d="M-182 404v16.8c0 .7-.4 1.2-1 1.2h-75.7c-.7 0-1.2-.6-1.2-1.2v-47.6c0-.7.6-1.2 1.2-1.2h75.7c.7 0 1 .6 1 1.2v21.8m-78-14h78m-17 18h27m-3.9-4.6l4.5 4.6-4.5 4.6" fill="none" /&gt; &lt;circle fill="#B2B2B2" cx="-255.5" cy="376.5" r="1.5" /&gt; &lt;circle fill="#B2B2B2" cx="-250.5" cy="376.5" r="1.5" /&gt; &lt;circle fill="#B2B2B2" cx="-245.5" cy="376.5" r="1.5" /&gt; &lt;/svg&gt; &lt;/div&gt; &lt;p style="text-align: center;"&gt;After clicking &amp;ldquo;Complete order&amp;rdquo;, you will be redirected to Tamara Payment to complete your instalment purchase securely&lt;/p&gt;</custom-attribute>
+        </custom-attributes>
+    </content>
+
+    <content content-id="tamara-paylater-callout">
+        <display-name xml:lang="x-default">Tamara paylater payment</display-name>
+        <online-flag>true</online-flag>
+        <searchable-flag>false</searchable-flag>
+        <page-attributes/>
+        <custom-attributes>
+            <custom-attribute attribute-id="body" xml:lang="x-default">&lt;div style="text-align: center;"&gt; &lt;svg xmlns="http://www.w3.org/2000/svg" width="102" height="52" viewBox="-270.8 371 102 52" enable-background="new -270.8 371 102 52"&gt; &lt;path stroke="#B2B2B2" stroke-width="2" stroke-miterlimit="10" d="M-182 404v16.8c0 .7-.4 1.2-1 1.2h-75.7c-.7 0-1.2-.6-1.2-1.2v-47.6c0-.7.6-1.2 1.2-1.2h75.7c.7 0 1 .6 1 1.2v21.8m-78-14h78m-17 18h27m-3.9-4.6l4.5 4.6-4.5 4.6" fill="none" /&gt; &lt;circle fill="#B2B2B2" cx="-255.5" cy="376.5" r="1.5" /&gt; &lt;circle fill="#B2B2B2" cx="-250.5" cy="376.5" r="1.5" /&gt; &lt;circle fill="#B2B2B2" cx="-245.5" cy="376.5" r="1.5" /&gt; &lt;/svg&gt; &lt;/div&gt; &lt;p style="text-align: center;"&gt;After clicking &amp;ldquo;Complete order&amp;rdquo;, you will be redirected to Tamara Payment to complete your Pay Later securely&lt;/p&gt;</custom-attribute>
+        </custom-attributes>
+    </content>
+</library>

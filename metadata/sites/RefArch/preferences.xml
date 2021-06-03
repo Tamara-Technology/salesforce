@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<preferences xmlns="http://www.demandware.com/xml/impex/preferences/2007-03-31">
+    <custom-preferences>
+        <all-instances/>
+        <development>
+            <preference preference-id="tamaraAPIToken"></preference>
+            <preference preference-id="tamaraEnablement">true</preference>
+            <preference preference-id="tamaraEndPoint">https://api-sandbox.tamara.co</preference>
+            <preference preference-id="tamaraInstalmentsID">PAY_BY_INSTALMENTS</preference>
+            <preference preference-id="tamaraPaylaterID">PAY_BY_LATER</preference>
+            <preference preference-id="tamaraSupportedCountries">
+                <value>UAE</value>
+                <value>SA</value>
+            </preference>
+            <preference preference-id="tamaraWebhookEvents">["order_approved",
+"order_on_hold",
+"order_declined",
+"order_authorised",
+"order_canceled",
+"order_captured",
+"order_refunded",
+"order_expired"]</preference>
+        </development>
+        <staging/>
+        <production/>
+    </custom-preferences>
+</preferences>
