@@ -12,6 +12,7 @@ Merchant can update your logic in the condition below.
         var tamaraHelper = require('*/cartridge/scripts/util/tamaraHelper');
         var widget = tamaraHelper.getProductWidget(price);
     </isscript>
+
     <isif condition="${widget}">
         <div class="col-sm-12">
             <isprint value="${widget}" encoding="off" />

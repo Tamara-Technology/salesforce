@@ -1,8 +1,7 @@
 <isinclude template="/components/modules" sf-toolkit="off" />
 
 <isscript>
-    var tamaraHelper = require('*/cartridge/scripts/util/tamaraHelper');
-    var checkoutWidget = tamaraHelper.getCheckoutWidget();
+    var checkoutWidget = tamaraHelper.getCheckoutWidget(3);
 </isscript>
 
 <div class="tab-pane ${tamaraHelper.METHOD_TAMARA_INSTALMENTS}-content" id="${tamaraHelper.METHOD_TAMARA_INSTALMENTS}-content" role="tabpanel">
@@ -14,12 +13,7 @@
         >
         <isif condition="${checkoutWidget}">
             <isprint value="${checkoutWidget}" encoding="off" />
-            <script charset="utf-8" src="https://cdn.tamara.co/widget/installment-plan.min.js"></script>
-            <script>
-            if (window.TamaraInstallmentPlan) {
-                window.TamaraInstallmentPlan.render()
-            }
-            </script>
+            
         </isif>
     </fieldset>
 </div>

@@ -10,6 +10,8 @@
             <isinclude template="checkout/billing/paymentOptions/tamaraPaylaterSummary" />
         <iselseif condition="${payment.paymentMethod === tamaraHelper.METHOD_TAMARA_INSTALMENTS}" />
             <isinclude template="checkout/billing/paymentOptions/tamaraInstalmentsSummary" />
+        <iselseif condition="${payment.paymentMethod === tamaraHelper.METHOD_TAMARA_6_INSTALMENTS}" />
+            <isinclude template="checkout/billing/paymentOptions/tamaraInstalmentsSummary" />
         </isif>
     </isloop>
 </div>

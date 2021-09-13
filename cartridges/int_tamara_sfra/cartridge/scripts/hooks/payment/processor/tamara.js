@@ -24,7 +24,7 @@ function Handle(basket, paymentInformation, paymentMethodID, req) {
     var collections = require('*/cartridge/scripts/util/collections');
     var serverErrors = [];
 
-    if([tamaraHelper.METHOD_TAMARA_PAYLATER, tamaraHelper.METHOD_TAMARA_INSTALMENTS].indexOf(paymentMethodID) === -1){
+    if ([tamaraHelper.METHOD_TAMARA_PAYLATER, tamaraHelper.METHOD_TAMARA_INSTALMENTS, tamaraHelper.METHOD_TAMARA_6_INSTALMENTS].indexOf(paymentMethodID) === -1) {
         tamaraHelper.getTamaraLogger().error('Tamara: payment method requested "{0}" is incorrect in int_tamara_sfra/cartridge/script/hooks/payment/processor/tamara.js:Handle().', paymentMethodID);
         serverErrors.push(
             Resource.msg('error.paymenttypes.outoflist', 'tamara', null)
@@ -62,12 +62,12 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
     var fieldErrors = {};
     var error = false;
     const order = OrderMgr.getOrder(orderNumber.toString());
-    if(!order){
+    if (!order) {
         serverErrors.push(
             Resource.msg('error.technical', 'checkout', null)
         );
         tamaraHelper.getTamaraLogger().error(
-         'Tamara: can not get the order from orderNumber {0} int_tamara_sfra/cartridge/script/hooks/payment/processor/tamara.js:Authorize()'
+            'Tamara: can not get the order from orderNumber {0} int_tamara_sfra/cartridge/script/hooks/payment/processor/tamara.js:Authorize()'
         );
         return { fieldErrors: fieldErrors, serverErrors: serverErrors, error: error };
     }
@@ -83,7 +83,7 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
             Resource.msg('error.technical', 'checkout', null)
         );
         tamaraHelper.getTamaraLogger().error(
-         'Tamara: ' + e.toString() + ' in ' + e.fileName + ':' + e.lineNumber
+            'Tamara: ' + e.toString() + ' in ' + e.fileName + ':' + e.lineNumber
         );
     }
 

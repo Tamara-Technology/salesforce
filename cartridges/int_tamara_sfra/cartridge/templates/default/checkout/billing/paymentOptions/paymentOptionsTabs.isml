@@ -9,5 +9,7 @@
         <isinclude template="checkout/billing/paymentOptions/tamaraTab" />
     <iselseif condition="${paymentOption.ID === tamaraHelper.METHOD_TAMARA_INSTALMENTS && tamaraHelper.getEnablementStatus() && pdict.tamara.isEnableInstalments}" />
         <isinclude template="checkout/billing/paymentOptions/tamaraTab" />
+    <iselseif condition="${paymentOption.ID === tamaraHelper.METHOD_TAMARA_6_INSTALMENTS && tamaraHelper.getEnablementStatus() && pdict.tamara.is6InstalmentsEnabled}" />
+    <isinclude template="checkout/billing/paymentOptions/tamaraTab" />
     </isif>
 </isloop>

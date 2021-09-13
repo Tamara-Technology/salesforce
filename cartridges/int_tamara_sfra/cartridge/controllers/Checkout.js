@@ -7,29 +7,29 @@ server.extend(page);
 /**
  * Checkout-Begin : The Checkout-Begin endpoint will render the checkout shipping page for both guest shopper and returning shopper
  */
-server.prepend('Begin', function(req, res, next) { // eslint-disable-line
+server.prepend('Begin', function (req, res, next) { // eslint-disable-line
 
     const tamaraHelper = require('*/cartridge/scripts/util/tamaraHelper');
-    const viewData = res.getViewData();
+    let viewData = res.getViewData();
 
-    if(tamaraHelper.getEnablementStatus()){
+    if (tamaraHelper.getEnablementStatus()) {
         viewData.tamara = {
             isEnablePaylater: false,
             isEnableInstalments: false,
+            is6InstalmentsEnabled: false
         };
-    }
-
-    if(tamaraHelper.getEnablementStatus()){
+   
         try {
             const paymentTypes = tamaraHelper.getSupportedPayments();
             viewData.tamara = {
                 isEnablePaylater: paymentTypes.isPaylaterValid,
-                isEnableInstalments: paymentTypes.isInstalmentValid
+                isEnableInstalments: paymentTypes.isInstalmentValid,
+                is6InstalmentsEnabled: paymentTypes.is6InstalmentValid
             };
 
         } catch (e) {
             tamaraHelper.getTamaraLogger().error(
-             'Tamara: ' + e.toString() + ' in ' + e.fileName + ':' + e.lineNumber
+                'Tamara: ' + e.toString() + ' in ' + e.fileName + ':' + e.lineNumber
             );
         }
     }

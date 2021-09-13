@@ -2,6 +2,8 @@
     var tamaraHelper = require('*/cartridge/scripts/util/tamaraHelper');
 </isscript>
 
+<script charset="utf-8" src="https://cdn.tamara.co/widget/installment-plan.min.js"></script>
+
 <isloop items="${pdict.order.billing.payment.applicablePaymentMethods}" var="paymentOption">
     <isif condition="${paymentOption.ID === tamaraHelper.METHOD_CREDIT_CARD}">
         <isinclude template="checkout/billing/paymentOptions/creditCardContent" />
@@ -9,5 +11,13 @@
         <isinclude template="checkout/billing/paymentOptions/tamaraPaylaterContent" />
     <iselseif condition="${paymentOption.ID === tamaraHelper.METHOD_TAMARA_INSTALMENTS && tamaraHelper.getEnablementStatus() && pdict.tamara.isEnableInstalments}" />
         <isinclude template="checkout/billing/paymentOptions/tamaraInstalmentsContent" />
+    <iselseif condition="${paymentOption.ID === tamaraHelper.METHOD_TAMARA_6_INSTALMENTS && tamaraHelper.getEnablementStatus() && pdict.tamara.is6InstalmentsEnabled}" />
+        <isinclude template="checkout/billing/paymentOptions/tamara6InstalmentsContent" />
     </isif>
 </isloop>
+
+ <script>
+            if (window.TamaraInstallmentPlan) {
+                window.TamaraInstallmentPlan.render()
+            }
+            </script>

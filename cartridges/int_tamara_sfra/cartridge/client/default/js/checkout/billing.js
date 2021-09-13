@@ -19,7 +19,7 @@
                 + order.billing.payment.selectedPaymentInstruments[0].expirationMonth
                 + '/' + order.billing.payment.selectedPaymentInstruments[0].expirationYear
                 + '</span></div>';
-     } else if (['TAMARA_INSTALMENTS', 'TAMARA_PAYLATER'].indexOf(order.billing.payment.selectedPaymentInstruments[0].paymentMethod) !== -1) {
+     } else if (['TAMARA_3_INSTALMENTS', 'TAMARA_6_INSTALMENTS', 'TAMARA_PAYLATER'].indexOf(order.billing.payment.selectedPaymentInstruments[0].paymentMethod) !== -1) {
        htmlToAppend += order.billing.payment.selectedPaymentInstruments[0].paymentMethod.replace('_', ' ');
      }
    }
