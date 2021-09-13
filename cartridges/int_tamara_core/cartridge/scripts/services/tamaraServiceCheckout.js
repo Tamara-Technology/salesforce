@@ -81,16 +81,14 @@ var tamaraServiceCheckout = {
                 ),
             "country_code": tamaraHelper.getCurrentCountryCode(), // 'US'
             "payment_type": tamaraHelper.getPaymentTypeID(paymentInstrument.getPaymentMethod()),
+            "instalments": tamaraHelper.getInstallments(paymentInstrument.getPaymentMethod()),
             "locale": request.getLocale(),
             "items": items,
             "consumer": {
                 "first_name": customer ? customer.getFirstName() : billingAddress.getFirstName(),
                 "last_name": customer ? customer.getLastName() : billingAddress.getLastName(),
                 "phone_number": customer && customer.getPhoneMobile() ? customer.getPhoneMobile() : billingAddress.getPhone(),
-                "email": order.customerEmail,
-                //"national_id": "123456",
-                "date_of_birth": customer ? customer.getBirthday() : "",
-                //"is_first_order": true
+                "email": order.customerEmail
             },
             "billing_address": {
                 "first_name": billingAddress.getFirstName(),

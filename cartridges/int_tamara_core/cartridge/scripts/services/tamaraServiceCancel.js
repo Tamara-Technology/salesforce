@@ -1,18 +1,16 @@
-const Resource = require('dw/web/Resource');
-const tamaraHelper = require('*/cartridge/scripts/util/tamaraHelper');
 
 /* eslint no-var: off */
-var tamaraServiceCapture = {
+var tamaraServiceCancel = {
 
     /**
-     * Authorised the checkout request
-     * @param {dw.order.Order} order - The current order's number
-     * @param {dw.order.PaymentInstrument} paymentInstrument -  The payment instrument to authorize
-     * @param {Object} paymentInstrument -  The payment instrument to authorize
+     * Cancel the order request
+     * @param {dw.order.Order} order - The current order object
+     * @param {object} requestBody - The request object body {comment: '', amount: 0}
 	 * @param {string} trackingChange - the system change message- for tracking purpose
      * @return {Object} returns an object or throw an error message
      */
-    initService: function(order, paymentInstrument, trackingChange){
+    initService: function(order, requestBody, trackingChange){
+        var tamaraHelper = require('*/cartridge/scripts/util/tamaraHelper');
 
         const service = tamaraHelper.getService(tamaraHelper.SERVICE.ORDER.CANCEL);
 
@@ -25,9 +23,9 @@ var tamaraServiceCapture = {
         service.setRequestMethod('POST');
 
         const callResult = service.call(JSON.stringify({
-            "comment": "Captured by Salesforce B2C commerce platform",
+            "comment": requestBody.comment,
             "total_amount": {
-                "amount": order.totalGrossPrice.getValue(),
+                "amount": requestBody.amount,
                 "currency": order.currencyCode
             },
         }));
@@ -42,11 +40,11 @@ var tamaraServiceCapture = {
         if (!resultObject) {
             throw new Error('No correct response from ' + tamaraHelper.SERVICE.ORDER.CANCEL);
         }
-        tamaraHelper.captureOrder(order, paymentInstrument, trackingChange);
+        tamaraHelper.cancelOrderTracking(order, trackingChange);
 
         return resultObject;
     },
 
 }
 
-module.exports = tamaraServiceCapture;
+module.exports = tamaraServiceCancel;

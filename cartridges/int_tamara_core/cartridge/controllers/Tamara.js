@@ -12,14 +12,14 @@ const Resource = require('dw/web/Resource');
 const tamaraHelper = require('*/cartridge/scripts/util/tamaraHelper');
 const server = require('server');
 
-function getTokenObject(req){
+function getTokenObject(req) {
     var token = req.querystring && req.querystring.token ? req.querystring.token : '';
-    if(!token){
+    if (!token) {
         throw Error('Tamara-Success controller requires "token" in parameter, but not found in the request.');
     }
 
     var tokenObject = JSON.parse(tamaraHelper.decryptToken(token));
-    if(!tokenObject || !tokenObject.orderNo ||!tokenObject.paymentMethodID){
+    if (!tokenObject || !tokenObject.orderNo || !tokenObject.paymentMethodID) {
         throw Error('Tamara-Success controller requires "orderNo" & "paymentMethodID" in token object, but not found in the request.' + tamaraHelper.decryptToken(token));
     }
 
@@ -33,14 +33,14 @@ server.get('Success', server.middleware.https, function (req, res, next) {
         var responseObject = getTokenObject(req);
 
         const order = OrderMgr.getOrder(responseObject.orderNo);
-        if(!order){
+        if (!order) {
             throw new Error(
                 'Tamara-Success: Not found order object from orderNo ' + responseObject.orderNo
             );
         }
-    
+
         const paymentInstrument = order.getPaymentInstruments(responseObject.paymentMethodID);
-        if(!paymentInstrument.length){
+        if (!paymentInstrument.length) {
             throw new Error(
                 'Tamara-Success: Not found paymentInstrument "' + responseObject.paymentMethodID + '" from orderNo ' + responseObject.orderNo
             );
@@ -54,8 +54,8 @@ server.get('Success', server.middleware.https, function (req, res, next) {
             order.orderNo,
             'token',
             order.orderToken
-          )
-        );
+        ));
+        
     } catch (e) {
         tamaraHelper.getTamaraLogger().error(
             'Tamara: ' + e.toString() + ' in ' + e.fileName + ':' + e.lineNumber
@@ -66,7 +66,7 @@ server.get('Success', server.middleware.https, function (req, res, next) {
             'payment',
             'paymentError',
             Resource.msg('error.payment.not.valid', 'checkout', null)
-          )
+        )
         );
     }
 
@@ -79,13 +79,13 @@ server.get('Failure', server.middleware.https, function (req, res, next) {
         const responseObject = getTokenObject(req);
 
         const order = OrderMgr.getOrder(responseObject.orderNo);
-        if(!order){
+        if (!order) {
             throw new Error(
                 'Tamara-Failure: Not found order object from orderNo ' + responseObject.orderNo
             );
         }
         const paymentInstrument = order.getPaymentInstruments(responseObject.paymentMethodID);
-        if(!paymentInstrument.length){
+        if (!paymentInstrument.length) {
             throw new Error(
                 'Tamara-Failure: Not found paymentInstrument "' + responseObject.paymentMethodID + '" from orderNo ' + responseObject.orderNo
             );
@@ -96,14 +96,14 @@ server.get('Failure', server.middleware.https, function (req, res, next) {
             'Tamara: ' + e.toString() + ' in ' + e.fileName + ':' + e.lineNumber
         );
     }
-    
+
     res.redirect(URLUtils.url(
         'Checkout-Begin',
         'stage',
         'payment',
         'paymentError',
         Resource.msg('error.payment.not.valid', 'checkout', null)
-      )
+    )
     );
     next();
 });
@@ -113,13 +113,13 @@ server.get('Cancel', server.middleware.https, function (req, res, next) {
         const responseObject = getTokenObject(req);
 
         const order = OrderMgr.getOrder(responseObject.orderNo);
-        if(!order){
+        if (!order) {
             throw new Error(
                 'Tamara-Cancel: Not found order object from orderNo ' + responseObject.orderNo
             );
         }
         const paymentInstrument = order.getPaymentInstruments(responseObject.paymentMethodID);
-        if(!paymentInstrument.length){
+        if (!paymentInstrument.length) {
             throw new Error(
                 'Tamara-Cancel: Not found paymentInstrument "' + responseObject.paymentMethodID + '" from orderNo ' + responseObject.orderNo
             );
@@ -130,34 +130,34 @@ server.get('Cancel', server.middleware.https, function (req, res, next) {
             'Tamara: ' + e.toString() + ' in ' + e.fileName + ':' + e.lineNumber
         );
     }
-    
+
     res.redirect(URLUtils.url(
         'Checkout-Begin',
         'stage',
         'payment',
         'paymentError',
         Resource.msg('error.payment.not.valid', 'checkout', null)
-      )
+    )
     );
     next();
 });
 
 server.use('Notify', server.middleware.https, function (req, res, next) {
     try {
-       
+
         // Get response data from Tamara
         var responseObject = getTokenObject(req);
 
         const order = OrderMgr.getOrder(responseObject.orderNo);
         const body = JSON.parse(req.body || '{}');
-        if(!order || body.order_reference_id !== order.orderNo){
+        if (!order || body.order_reference_id !== order.orderNo) {
             throw new Error(
                 'Tamara-Notify: Not found related order object from orderNo ' + responseObject.orderNo
             );
         }
-    
+
         const paymentInstrument = order.getPaymentInstruments(responseObject.paymentMethodID);
-        if(!paymentInstrument.length){
+        if (!paymentInstrument.length) {
             throw new Error(
                 'Tamara-Notify: Not found paymentInstrument "' + responseObject.paymentMethodID + '" from orderNo ' + responseObject.orderNo
             );
