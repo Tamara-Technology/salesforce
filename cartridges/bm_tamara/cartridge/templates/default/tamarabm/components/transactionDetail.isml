@@ -1,0 +1,117 @@
+<h2 class="padding-top">${Resource.msgf('transaction.detail.orderinformation', 'tamarabm', null)}</h2>
+
+<table class="tamarabm_transaction_detail_table infobox w e s n">
+    <tr>
+        <td class="infobox_title top">${Resource.msg('transaction.detail.customername', 'tamarabm', null)}:</td>
+        <td class="infobox_item top">
+            <isprint value="${order.getCustomerName()}" />
+        </td>
+    </tr>
+    <tr class="tamarabm_gray">
+        <td class="infobox_title top">${Resource.msg('transaction.detail.customeremail', 'tamarabm', null)}:</td>
+        <td class="infobox_item top">
+            <isprint value="${order.getCustomerEmail()}" />
+        </td>
+    </tr>
+    <tr>
+        <td class="infobox_title top">${Resource.msg('transaction.detail.commercestatus', 'tamarabm', null)}:</td>
+        <td class="infobox_item top">
+            <isprint value="${order.status}" />
+        </td>
+    </tr>
+    <tr class="tamarabm_gray">
+        <td class="infobox_title top">${Resource.msg('transaction.detail.status', 'tamarabm', null)}:
+        </td>
+        <td class="infobox_item top">
+            <isprint value="${order.getCustom()['tamaraPaymentStatus'].toUpperCase()}" />
+        </td>
+    </tr>
+    <tr>
+        <td class="infobox_title top">${Resource.msg('transaction.detail.shipping', 'tamarabm', null)}:</td>
+        <td class="infobox_item top">
+            <div class="shipping-address-summary">
+                <div>
+                    <span class="firstName">
+                        <isif condition="${shippingAddress && shippingAddress.firstName}">
+                            ${shippingAddress.firstName}</isif>
+                    </span>
+                    <span class="lastName">
+                        <isif condition="${shippingAddress && shippingAddress.lastName}">
+                            ${shippingAddress.lastName}</isif>
+                    </span>
+                </div>
+
+                <div class="address1">
+                    <isif condition="${shippingAddress && shippingAddress.address1}">
+                        ${shippingAddress.address1}</isif>
+                </div>
+
+                <div class="address2">
+                    <isif condition="${shippingAddress && shippingAddress.address2}">
+                        ${shippingAddress.address2}</isif>
+                </div>
+
+                <span class="city">
+                    <isif condition="${shippingAddress && shippingAddress.city}">
+                        ${shippingAddress.city},</isif>
+                </span>
+                <span class="stateCode">
+                    <isif condition="${shippingAddress && shippingAddress.stateCode}">
+                        ${shippingAddress.stateCode}</isif>
+                </span>
+                <span class="postalCode">
+                    <isif condition="${shippingAddress && shippingAddress.postalCode}">
+                        ${shippingAddress.postalCode}</isif>
+                </span>
+            </div>
+        </td>
+    </tr>
+    <tr class="tamarabm_gray">
+        <td class="infobox_title top">${Resource.msg('transaction.detail.billing', 'tamarabm', null)}:</td>
+        <td class="infobox_item top">
+            <div class="billing-address-summary">
+                <div>
+                    <span class="firstName">
+                        <isif condition="${billingAddress && billingAddress.firstName}">
+                            ${billingAddress.firstName}</isif>
+                    </span>
+                    <span class="lastName">
+                        <isif condition="${billingAddress && billingAddress.lastName}">
+                            ${billingAddress.lastName}</isif>
+                    </span>
+                </div>
+
+                <div class="address1">
+                    <isif condition="${billingAddress && billingAddress.address1}">
+                        ${billingAddress.address1}</isif>
+                </div>
+
+                <div class="address2">
+                    <isif condition="${billingAddress && billingAddress.address2}">
+                        ${billingAddress.address2}</isif>
+                </div>
+
+                <span class="city">
+                    <isif condition="${billingAddress && billingAddress.city}">${billingAddress.city},
+                    </isif>
+                </span>
+                <span class="stateCode">
+                    <isif condition="${billingAddress && billingAddress.stateCode}">
+                        ${billingAddress.stateCode}</isif>
+                </span>
+                <span class="postalCode">
+                    <isif condition="${billingAddress && billingAddress.postalCode}">
+                        ${billingAddress.postalCode}</isif>
+                </span>
+            </div>
+        </td>
+    </tr>
+    <tr>
+        <td class="infobox_title top"></td>
+        <td class="infobox_item top">
+            <a class="button" target="_blank" title="${order.orderNo}"
+                href="${URLUtils.url('ViewOrder_52-FindByNumber', 'OrderID', order.getUUID()).appendCSRFTokenBM().toString()}">View
+                more details</a>
+        </td>
+    </tr>
+</table>

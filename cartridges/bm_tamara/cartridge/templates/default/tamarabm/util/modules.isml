@@ -1,0 +1,5 @@
+<ismodule template = "tamarabm/components/pagination"
+    name="tamarapagination"
+    attribute="pageurl"
+    attribute="pagingmodel"
+/>

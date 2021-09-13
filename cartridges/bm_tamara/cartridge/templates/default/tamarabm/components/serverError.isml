@@ -1,0 +1,10 @@
+<isdecorate template="tamarabm/util/pt_tamara">
+
+<table class="error_box n s e w">
+    <tr valign="top">
+        <td class="error_icon top e"></td>
+        <td class="error top" width="100%">${Resource.msg('server.error', 'tamarabm', null)}</td>
+    </tr>
+</table>
+
+</isdecorate>

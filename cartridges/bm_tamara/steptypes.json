@@ -1,0 +1,30 @@
+{
+	"step-types":{
+	   "script-module-step":[
+		  {
+			 "@type-id":"custom.removeTamaraCustomObject",
+			 "@supports-parallel-execution":"false",
+			 "@supports-site-context":"true",
+			 "@supports-organization-context":"false",
+			 "description":"Remove TamaraNew Transaction custom object when creation date is more than a year",
+			 "module":"bm_tamara/cartridge/scripts/transactionRemove.js",
+			 "function":"execute",
+			 "transactional":"true",
+			 "timeout-in-seconds":"900",
+			 "parameters":{},
+			 "status-codes":{
+				"status":[
+				   {
+					  "@code":"ERROR",
+					  "description":"An error occurs, please re-run the job or contact Tamara"
+				   },
+				   {
+					  "@code":"FINISHED",
+					  "description":"Outdated custom Tamara transaction were removed"
+				   }
+				]
+			 }
+		  }
+	   ]
+	}
+ }

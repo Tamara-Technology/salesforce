@@ -1,0 +1,47 @@
+<table class="tamarabm_transaction_detail_table infobox w e s n">
+    <isif condition="${purchaseUnits.invoice_id !== undefined}">
+        <tr>
+            <td class="infobox_title top">${Resource.msg('transaction.detail.invnum', 'tamarabm', null)}:</td>
+            <td class="infobox_item top">${purchaseUnits.invoice_id}</td>
+        </tr>
+    </isif>
+    <tr class="tamarabm_gray">
+        <td class="infobox_title top">${Resource.msg('transaction.detail.ordertime', 'tamarabm', null)}:</td>
+        <td class="infobox_item top">${transaction.orderTimeCreated || transaction.orderTimeUpdated}</td>
+    </tr>
+    <tr>
+        <td class="infobox_title top">${Resource.msg('transaction.detail.paymentstatus', 'tamarabm', null)}:</td>
+        <td class="infobox_item top">${transaction.paymentstatus}
+        </td>
+    </tr>
+    <tr>
+        <td class="infobox_title top"></td>
+        <td class="infobox_item top">
+            <ul class="tamarabm_transaction_actions">
+                <isset name="isOrder" value="${transaction.transactionid.indexOf('O-') !== -1}" scope="page" />
+                <isif condition="${(transaction.paymentstatus !== 'REFUNDED' && (transaction.paymentstatus === 'COMPLETED' || transaction.paymentstatus === 'PARTIALLY_REFUNDED') && transaction.intent === 'CAPTURE') || ((transaction.paymentstatus === 'PARTIALLY_REFUNDED') && transaction.intent === 'AUTHORIZE')
+                 || transaction.paymentstatus === 'COMPLETED' && transaction.intent === 'AUTHORIZE'}">
+                    <li>
+                        <span class="js_tamara_action" data-action="refund" data-title="${Resource.msg('transaction.refund.title', 'tamarabm', null)}">${Resource.msg('transaction.actions.refund', 'tamarabm', null)}</span>
+                    </li>
+                </isif>
+                <isif condition="${transaction.paymentstatus !== 'VOIDED' && transaction.paymentstatus !== 'CAPTURED' && transaction.paymentstatus !== 'REFUNDED' && !transaction.isCaptured && transaction.isCaptureButtonAllowed}">
+                    <isif condition="${pdict.isExpiredHonorPeriod}">
+                        <li>
+                            <span class="js_tamara_action" data-action="reauthorize" data-title="${Resource.msg('transaction.reauthorize.title', 'tamarabm', null)}">${Resource.msg('transaction.actions.reauthorize', 'tamarabm', null)}</span>
+                        </li>
+                    </isif>
+                    <li>
+                        <span class="js_tamara_action" data-action="capture" data-title="${Resource.msg('transaction.capture.title', 'tamarabm', null)}">${Resource.msg('transaction.actions.capture', 'tamarabm', null)}</span>
+                    </li>
+                </isif>
+                <isif condition="${transaction.paymentstatus !== 'VOIDED' && transaction.paymentstatus !== 'CAPTURED' && transaction.paymentstatus !== 'REFUNDED' && transaction.paymentstatus !== 'PARTIALLY_REFUNDED' && transaction.intent === 'AUTHORIZE' && empty(transaction.capturedAmount)}">
+                    <li>
+                        <span class="js_tamara_action" data-action="void" data-title="${Resource.msg('transaction.void.title', 'tamarabm', null)}">${Resource.msg('transaction.actions.void', 'tamarabm', null)}</span>
+                    </li>
+                </isif>
+
+            </ul>
+        </td>
+    </tr>
+</table>

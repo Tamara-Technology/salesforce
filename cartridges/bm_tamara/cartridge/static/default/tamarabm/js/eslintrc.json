@@ -1,0 +1,6 @@
+{
+    "rules": {
+		"require-jsdoc": "off",
+		"no-use-before-define": "off"
+    }
+}

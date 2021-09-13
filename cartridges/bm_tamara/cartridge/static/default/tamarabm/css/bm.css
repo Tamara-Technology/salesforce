@@ -1,0 +1,53 @@
+.tamarabm_header {margin-bottom:10px}
+.tamarabm_footer {padding:15px 0 0 0}
+.tamara_hide {display:none}
+
+.tamarabm_content table {width:100%; border-spacing:0; border-collapse:collapse}
+.tamarabm_content h2 {color: #84BD00; padding:0 0 10px; margin:0; font-size:15px; font-weight:bold; line-height:25px}
+.tamarabm_content .error_box {margin-bottom:10px}
+.tamarabm_content .tamarabm_transaction_detail_table {font-size:13px; line-height:1.4; margin-bottom:10px; width:100%}
+.tamarabm_content .tamarabm_transaction_detail_table td {padding:4px 6px}
+.tamarabm_content .tamarabm_gray {background:#fcfcfc}
+.tamarabm_content .tamarabm_table_head {font-size:14px; background:#f0f0f0; font-weight:bold}
+.tamarabm_content .tamarabm_table_head td {border-bottom:1px solid #dadada}
+.tamarabm_content .infobox_title {width:185px; text-align:right}
+.tamarabm_content .infobox_title i {font-weight:normal; color:#777}
+
+.tamarabm_pagination {padding:10px 0 0 0}
+.tamarabm_pagination .pagecursortxt {padding:0 2px}
+
+.tamarabm_window_content .tamarabm_content {padding:10px 10px 0 10px}
+.tamarabm_window_content .tamarabm_footer {display:none}
+.tamarabm_window_content .tamarabm_header {display:none}
+.tamarabm_window_content .x-window-body {background:#fff}
+.tamarabm_window_content table {width:inherit}
+
+.tamarabm_selectother_transactions {float:right}
+.tamarabm_selectother_transactions span {font-size:13px}
+
+.tamarabm_transaction_actions {padding:0 0 5px 0}
+.tamarabm_transaction_actions li {display:inline-block; padding:0 5px 0 0}
+.tamarabm_transaction_actions li span {display:inline-block; padding:2px 6px; text-decoration:none; background-color:#d9d9d9; border:1px solid #d9d9d9; border-radius:3px; color:#00629b; cursor:pointer; margin:0; white-space:nowrap; font-size:13px}
+.tamarabm_transaction_actions li span:hover {background-color:#eee; border:1px solid #ccc}
+
+.tamara_action_form h2 {color: #84BD00; padding:0 0 10px; margin:0; font-size:15px; font-weight:bold; line-height:1.1em}
+.tamara_action_form input {width:100px; border:1px solid #a5aeb5}
+.tamara_action_form .js_tamara_reference_transaction_card input {width:200px}
+.tamara_action_form textarea {width:300px}
+.tamara_action_form .tamara_error_field .infobox_title {color:#f00}
+.tamara_action_form .tamara_error_field input {border-color:#f00}
+.tamara_action_form table {width:100%; border-spacing:0; border-collapse:collapse}
+
+.tamara_error_msg_box {display:none; min-height:30px; margin:0 0 10px 0; border:1px solid #ffcf0f; padding:12px 12px 0 60px; background-repeat: no-repeat; color:#000; background: #ffffde url('../images/icon_alert.gif') no-repeat 15px 10px; font-size:13px; line-height:1.3em}
+.tamara_error_msg_box p {padding:0 0 12px 0}
+
+.tamara_ba_customer_search {padding: 6px}
+
+.js_tamara_create_reference_transaction {float: right}
+
+.tamara_new_transaction_form td .biginput{width: 220px;}
+
+.tamara_new_transaction_title {float: left}
+
+.js_tamara_toggle_button {margin-left: 10px; margin-bottom: 10px; padding: 0px 7px}
+.padding-top{padding-top: 20px;}

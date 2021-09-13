@@ -1,0 +1,48 @@
+<isif condition="${pdict.CurrentHttpParameterMap.format.stringValue === 'ajax'}">
+
+    <isdecorate template="tamarabm/util/pt_empty">
+
+        <div class="tamarabm_content tamarabm_content_ajax">
+            <isreplace/>
+        </div>
+
+    </isdecorate>
+
+<iselse/>
+
+    <isdecorate template="application/MenuFrame">
+
+        <link rel="stylesheet" href="${URLUtils.staticURL('/tamarabm/css/bm.css')}" />
+        <link rel="stylesheet" href="${URLUtils.staticURL('/jscript/ext/resources/css/ext-all.css')}" />
+
+        <script type="text/javascript" src="${URLUtils.staticURL('/jscript/ext/adapter/ext/ext-base.js')}"></script>
+        <script type="text/javascript" src="${URLUtils.staticURL('/jscript/ext/ext-all.js')}"></script>
+
+        <script type="text/javascript" src="${URLUtils.staticURL('/tamarabm/js/tamaraAdmin.js')}"></script>
+
+        <script type="text/javascript">
+            tamaraAdmin.init({
+                urls: {
+                    orderTransaction: "${URLUtils.url('TamaraAdmin-OrderTransaction')}",
+                    action: "${URLUtils.url('TamaraAdmin-Action')}"
+                },
+                resources: {
+                    submit: "${Resource.msg('forms.submit', 'tamarabm', null)}",
+                    cancel: "${Resource.msg('forms.cancel', 'tamarabm', null)}",
+                    errorMsgTitle: "${Resource.msg('msg.error.title', 'tamarabm', null)}",
+                    serverError: "${Resource.msg('server.error', 'tamarabm', null)}",
+                    pleaseWait: "${Resource.msg('msg.pleasewait', 'tamarabm', null)}",
+                    loadMaskText: {
+                        capture: "${Resource.msg('msg.creatingcapturetransaction', 'tamarabm', null)}"
+                    }
+                }
+            });
+        </script>
+
+        <div class="tamarabm_content js_tamarabm_content">
+            <isreplace/>
+        </div>
+
+    </isdecorate>
+
+</isif>

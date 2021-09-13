@@ -1,0 +1,34 @@
+<table class="tamarabm_transaction_detail_table infobox w e s n">
+    <tr>
+        <td class="infobox_title top">${Resource.msg('transaction.detail.amt', 'tamarabm', null)}:</td>
+        <td class="infobox_item top">
+            ${Resource.msgf('transaction.detail.moneyformat', 'tamarabm', null, transaction.amt, transaction.currencycode)}
+            <isif condition="${!empty(transaction.capturedAmount)}">
+                <span><i>${Resource.msg('capture.amount', 'tamarabm', null)}</i> ${transaction.capturedAmount}</span>
+            </isif>
+            <isif condition="${!empty(transaction.refundedAmount)}">
+                <span><i>${Resource.msg('capture.refund', 'tamarabm', null)}</i> ${transaction.refundedAmount}</span>
+            </isif>
+        </td>
+    </tr>
+    <isif condition="${transaction.paymentstatus !== 'REFUNDED'}">
+        <isif condition="${shippingAmount !== null}">
+            <tr class="tamarabm_gray">
+                <td class="infobox_title top">${Resource.msg('transaction.detail.shippingamt', 'tamarabm', null)}:</td>
+                <td class="infobox_item top">${Resource.msgf('transaction.detail.moneyformat', 'tamarabm', null, shippingAmount, transaction.currencycode)}</td>
+            </tr>
+        </isif>
+        <isif condition="${taxAmount !== null}">
+            <tr>
+                <td class="infobox_title top">${Resource.msg('transaction.detail.salestax', 'tamarabm', null)}:</td>
+                <td class="infobox_item top">${Resource.msgf('transaction.detail.moneyformat', 'tamarabm', null, taxAmount, transaction.currencycode)}</td>
+            </tr>
+        </isif>
+        <isif condition="${handleAmount !== null}">
+            <tr class="tamarabm_gray">
+                <td class="infobox_title top">${Resource.msg('transaction.detail.handlingamt', 'tamarabm', null)}:</td>
+                <td class="infobox_item top">${Resource.msgf('transaction.detail.moneyformat', 'tamarabm', null, handleAmount, transaction.currencycode)}</td>
+            </tr>
+        </isif>
+    </isif>
+</table>

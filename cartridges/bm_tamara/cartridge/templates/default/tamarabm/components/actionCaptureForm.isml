@@ -1,0 +1,31 @@
+<div id="tamara_capture_form" class="tamara_hide">
+    <form class="tamara_action_form tamarabm_content" action="${URLUtils.url('TamaraAdmin-Action')}">
+
+        <input type="hidden" name="methodName" value="DoCapture" />
+        <input type="hidden" name="orderNo" value="${order.orderNo}" />
+
+        <h2>${Resource.msg('transaction.capture.title', 'tamarabm', null)}</h2>
+
+        <div class="tamara_error_msg_box tamara_error_msg_box_amt_required"><p>${Resource.msg('forms.error.amt.required', 'tamarabm', null)}</p></div>
+        <div class="tamara_error_msg_box tamara_error_msg_box_amt_greaterzero"><p>${Resource.msg('forms.error.amt.greaterzero', 'tamarabm', null)}</p></div>
+        <div class="tamara_error_msg_box tamara_error_msg_box_amt_float"><p>${Resource.msg('forms.error.amt.float', 'tamarabm', null)}</p></div>
+        <div class="tamara_error_msg_box tamara_error_msg_box_amt_maxvalue"><p>${Resource.msg('forms.error.amt.maxvalue', 'tamarabm', null)} <span></span> ${tamaraOrder.getCurrency()}</p></div>
+
+        <table class="tamarabm_transaction_detail_table infobox w e s n">
+
+            <tr>
+                <td class="infobox_title top">${Resource.msg('transaction.capture.captureamount', 'tamarabm', null)}:</td>
+                <td class="infobox_item top"><input type="text" name="amt" value="${tamaraOrder.getAvailableActions()['capture']}" data-validation="required,float,greaterzero" /> ${tamaraOrder.getCurrency()}</td>
+            </tr>
+            <tr>
+                <td class="infobox_title top">
+                    ${Resource.msg('transaction.capture.note', 'tamarabm', null)}
+                </td>
+                <td class="infobox_item top">
+                    <textarea name="note" cols="50" rows="10" data-maxcount="255"></textarea>
+                    <p><b class="js_textarea_count">0</b> ${Resource.msg('forms.charectersleft', 'tamarabm', null)}</p>
+                </td>
+            </tr>
+        </table>
+    </form>
+</div>

@@ -1,0 +1,42 @@
+<isif condition="${!pdict.pagingmodel.empty}">
+    <isscript>
+        var pagination = pdict.pagingmodel;
+        var pageURL = pdict.pageurl;
+        var current = pagination.start;
+        var totalCount = pagination.count;
+        var pageSize = pagination.pageSize;
+        var currentPage = pagination.currentPage;
+        var maxPage = pagination.maxPage;
+
+        showingStart = current + 1;
+        showingEnd = current + pageSize;
+
+        if (showingEnd > totalCount) {
+            showingEnd = totalCount;
+        }
+
+        lr = 2;
+        if ( maxPage <= 2*lr ) {
+            rangeBegin = 1;
+            rangeEnd = maxPage-1;
+        } else {
+            rangeBegin = Math.max( Math.min( currentPage - lr, maxPage - 2*lr ), 1 );
+            rangeEnd = Math.min( rangeBegin + 2*lr, maxPage - 1 );
+        }
+
+        var parameters = [];
+        for(var property in pdict.CurrentHttpParameterMap) {
+            if(property == 'page') {
+                continue;
+            }
+            parameters.push({
+                key: property,
+                value: pdict.CurrentHttpParameterMap[property]
+            });
+        }
+
+    </isscript>
+
+    <isinclude template="tamarabm/components/paginationForm" />
+
+</isif>

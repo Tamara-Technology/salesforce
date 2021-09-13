@@ -1,0 +1,93 @@
+<isset name="none" value="style='display: none;'" scope="page" />
+<isset name="block" value="style='display: block;'" scope="page" />
+<isdecorate template="tamarabm/util/pt_tamara">
+
+<isinclude template="inc/Modules" />
+<isinclude template="tamarabm/util/modules" />
+
+<isscript>
+var isSearchByOrderNo = pdict.CurrentHttpParameterMap.orderNo.submitted;
+var isSearchByTransaction = pdict.CurrentHttpParameterMap.transactionId.submitted;
+
+if (!isSearchByOrderNo && !isSearchByTransaction) {
+    isSearchByOrderNo = true;
+}
+</isscript>
+
+<div class="tamarabm_header">
+    <isset name="ordersUrl" value="${URLUtils.url('SiteNavigationBar-ShowMenuitemOverview', 'CurrentMenuItemId', 'orders')}" scope="page" />
+    <isbreadcrumb name1="Ordering" url1="${ordersUrl}" name2="${Resource.msg('transactions.title', 'tamarabm', null)}" />
+
+    <table>
+        <tr><td width="100%" class="table_title w e s n">${Resource.msg('transactions.title', 'tamarabm', null)}</td></tr>
+        <tr><td class="w e s"></td></tr>
+        <tr><td class="table_title_description e w"><p>${Resource.msg('transactions.description', 'tamarabm', null)}</p></td></tr>
+    </table>
+</div>
+
+<div id="tamarabm_search_order_by_id" class="js_tamarabm_switch_block" ${isSearchByOrderNo ? block : none}>
+    <table class="infobox w e s n">
+        <tr>
+            <td class="infobox_title_search">${Resource.msg('search.order.title', 'tamarabm', null)}</td>
+            <td align="right" nowrap="nowrap" class="infobox_item_search">
+                <span class="switch_link">${Resource.msg('search.orderbynumber', 'tamarabm', null)}</span>&nbsp;
+                <a href="#tamarabm_search_transaction_by_id" class="switch_link js_tamarabm_switch">${Resource.msg('search.transactionbyid', 'tamarabm', null)}</a>
+            </td>
+        </tr>
+        <tr>
+            <td class="infobox_item_search" colspan="2">
+                <form action="${URLUtils.https('TamaraAdmin-Orders')}" method="get">
+                    <table>
+                        <tr>
+                            <td class="infobox_item_search" width="110" nowrap="nowrap"><span class="red">${Resource.msg('search.order.number', 'tamarabm', null)}:</span>&nbsp;</td>
+                            <td class="infobox_item_search">
+                                <input type="text" name="orderNo" value="${pdict.CurrentHttpParameterMap.orderNo.submitted ? pdict.CurrentHttpParameterMap.orderNo.stringValue : ''}" maxlength="350" size="35" class="inputfield_en">
+                                <button name="simpleSearch" value="true" class="button">${Resource.msg('search.submitbutton', 'tamarabm', null)}</button>
+                            </td>
+                            <td class="infobox_item_search">&nbsp;</td>
+                            <td class="infobox_item_search"></td>
+                        </tr>
+                    </table>
+                </form>
+            </td>
+        </tr>
+        <tr><td colspan="2">&nbsp;</td></tr>
+    </table>
+</div>
+
+<div id="tamarabm_search_transaction_by_id" class="js_tamarabm_switch_block" ${isSearchByTransaction ? block : none}>
+    <table class="infobox w e s n">
+        <tr>
+            <td class="infobox_title_search">${Resource.msg('search.order.title', 'tamarabm', null)}</td>
+            <td align="right" nowrap="nowrap" class="infobox_item_search">
+                <a href="#tamarabm_search_order_by_id" class="switch_link js_tamarabm_switch">${Resource.msg('search.orderbynumber', 'tamarabm', null)}</a>&nbsp;
+                <span class="switch_link">${Resource.msg('search.transactionbyid', 'tamarabm', null)}</span>
+            </td>
+        </tr>
+        <tr>
+            <td class="infobox_item_search" colspan="2">
+                <form action="${URLUtils.https('TamaraAdmin-Orders')}" method="get">
+                    <table>
+                        <tr>
+                            <td class="infobox_item_search" width="110" nowrap="nowrap"><span>${Resource.msg('search.transactionnumber', 'tamarabm', null)}:</span>&nbsp;</td>
+                            <td class="infobox_item_search">
+                                <input type="text" name="transactionId" value="${pdict.CurrentHttpParameterMap.transactionId.submitted ? pdict.CurrentHttpParameterMap.transactionId.stringValue : ''}" maxlength="350" size="35" class="inputfield_en">
+                                <button name="simpleSearch" value="true" class="button">${Resource.msg('search.submitbutton', 'tamarabm', null)}</button>
+                            </td>
+                            <td class="infobox_item_search">&nbsp;</td>
+                        </tr>
+                    </table>
+                </form>
+            </td>
+        </tr>
+        <tr><td colspan="2">&nbsp;</td></tr>
+    </table>
+</div>
+
+<isinclude template="tamarabm/orders"/>
+
+<div class="tamarabm_footer">
+    <a class="button" href="${ordersUrl}">&lt;&lt; ${Resource.msg('transactions.backordering', 'tamarabm', null)}</a>
+</div>
+
+</isdecorate>

@@ -1,0 +1,43 @@
+<isscript>
+    var pagingModel = pdict.PagingModel;
+    var orders = !empty(pagingModel) ? pagingModel.pageElements : [];
+</isscript>
+
+<isif condition="${!empty(orders)}">
+    <table>
+        <tr>
+            <td class="table_header w e s">${Resource.msg('search.grid.number', 'tamarabm', null)}</td>
+            <td class="table_header e s" nowrap="nowrap">${Resource.msg('search.grid.date', 'tamarabm', null)}</td>
+            <td class="table_header e s" nowrap="nowrap">${Resource.msg('search.grid.registration', 'tamarabm', null)}</td>
+            <td class="table_header e s" nowrap="nowrap">${Resource.msg('search.grid.customer', 'tamarabm', null)}</td>
+            <td class="table_header e s" nowrap="nowrap">${Resource.msg('search.grid.email', 'tamarabm', null)}</td>
+            <td class="table_header e s left" nowrap="nowrap">${Resource.msg('search.grid.total', 'tamarabm', null)}</td>
+            <td class="table_header e s left" nowrap="nowrap">${Resource.msg('search.grid.status', 'tamarabm', null)}</td>
+            <td class="table_header e s left" nowrap="nowrap">${Resource.msg('search.grid.commercestatus', 'tamarabm', null)}</td>
+        </tr>
+
+        <isloop items="${orders}" var="order">
+            <tr>
+                <td class="table_detail w e s" nowrap="nowrap">
+                    <a class="js_tamara_show_detail table_detail_link" href="${URLUtils.url('TamaraAdmin-OrderTransaction', 'orderNo', order.orderNo, 'currencyCode', order.currencyCode)}" data-orderno="${order.orderNo}" data-currencycode="${order.currencyCode}" title="${Resource.msgf('ordertransaction.title', 'tamarabm', null, order.orderNo)}">${order.orderNo}</a>
+                </td>
+                <td class="table_detail e s" nowrap="nowrap">
+                    <isprint value="${order.getCreationDate()}" formatter="MMMMM dd, yy hh:mm:ss aaa, z" timezone="SITE"/>
+                </td>
+                <td class="table_detail e s" nowrap="nowrap"><isprint value="${order.getCustomer().isRegistered() ? Resource.msg('search.grid.registration.registered', 'tamarabm', null) : Resource.msg('search.grid.registration.unregistered', 'tamarabm', null)}"/></td>
+                <td class="table_detail e s" nowrap="nowrap"><isprint value="${order.getCustomerName()}"/></td>
+                <td class="table_detail e s" nowrap="nowrap"><isprint value="${order.getCustomerEmail()}"/></td>
+                <td class="table_detail e s" nowrap="nowrap"><isprint value="${order.totalGrossPrice}"/></td>
+                <td class="table_detail e s" nowrap="nowrap"><isprint value="${order.custom.tamaraPaymentStatus ? order.custom.tamaraPaymentStatus.toUpperCase() : 'N/A'}"/></td>
+                <td class="table_detail e s" nowrap="nowrap"><isprint value="${order.status.toString()}"/></td>
+            </tr>
+        </isloop>
+
+    </table>
+    <istamarapagination pageurl="${URLUtils.https('TamaraAdmin-Orders')}" pagingmodel="${pagingModel}"/>
+
+<iselse>
+
+    <div class="table_detail w e s">${Resource.msg('transactions.emptysearch', 'tamarabm', null)}</div>
+
+</isif>

@@ -1,0 +1,69 @@
+<isdecorate template="tamarabm/util/pt_tamara">
+
+    <isset name="order" value="${pdict.order}" scope="page" />
+    <isset name="tamaraOrder" value="${pdict.tamaraOrder}" scope="page" />
+    <isset name="billingAddress" value="${order.getBillingAddress()}" scope="page" />
+    <isset name="shippingAddress" value="${order.getShipments().toArray()[0].getShippingAddress()}" scope="page" />
+
+    <isinclude template="inc/Modules" />
+    <isinclude template="tamarabm/util/modules" />
+    <div class="js_tamarabm_order_detail" data-orderno="${order.orderNo}" data-currencycode="${order.currencyCode}"></div>
+    <div class="tamarabm_header">
+        <isset name="ordersUrl"
+            value="${URLUtils.url('SiteNavigationBar-ShowMenuitemOverview', 'CurrentMenuItemId', 'orders')}"
+            scope="page" />
+        <isset name="transactionsUrl" value="${URLUtils.url('TamaraAdmin-Orders')}" scope="page" />
+        <isbreadcrumb name1="Ordering" url1="${ordersUrl}" name2="Tamara Transactions" url2="${transactionsUrl}"
+            name3="${Resource.msgf('ordertransaction.breadcrumb', 'tamarabm', null, order.orderNo)}" />
+
+        <table>
+            <tr>
+                <td width="100%" class="table_title w e s n">${Resource.msgf('ordertransaction.title', 'tamarabm', null, order.orderNo)}</td>
+            </tr>
+            <tr>
+                <td class="w e s"></td>
+            </tr>
+            <iscomment>
+                <tr>
+                    <td class="table_title_description e w s">
+                        <p>${Resource.msg('ordertransaction.description', 'tamarabm', null)}</p>
+                    </td>
+                </tr>
+            </iscomment>
+        </table>
+    </div>
+
+<isinclude template="tamarabm/components/actionRefundForm"/>
+<isinclude template="tamarabm/components/actionCaptureForm"/>
+<isinclude template="tamarabm/components/actionVoidForm"/>
+    <h2>${Resource.msgf('transaction.detail.title', 'tamarabm', null, order.getCustom()['tamaraOrderReferenceID'])}</h2>
+
+    <table>
+        <tr>
+            <td class="table_header w e s">${Resource.msg('transaction.detail.total', 'tamarabm', null)}</td>
+            <td class="table_header e s" nowrap="nowrap">${Resource.msg('transaction.detail.captured', 'tamarabm', null)}</td>
+            <td class="table_header e s" nowrap="nowrap">${Resource.msg('transaction.detail.refunded', 'tamarabm', null)}</td>
+            <td class="table_header e s" nowrap="nowrap">${Resource.msg('transaction.detail.cancelled', 'tamarabm', null)}</td>
+            <td class="table_header e s" nowrap="nowrap"></td>
+        </tr>
+        <tr>
+            <td class="table_detail w e s"><isprint value="${order.totalGrossPrice}" /></td>
+            <td class="table_detail w e s"><isprint value="${tamaraOrder.getTotalCaptured()}" /></td>
+            <td class="table_detail w e s"><isprint value="${tamaraOrder.getTotalRefunded()}" /></td>
+            <td class="table_detail w e s"><isprint value="${tamaraOrder.getTotalCancelled()}" /></td>
+            <td class="table_detail w e s">
+                <isif condition="${tamaraOrder.getAvailableActions()['capture'] > 0}">
+                    <button class="button js_tamara_action" data-action="capture" data-title="${Resource.msg('transaction.capture.title', 'tamarabm', null)}" type="button" name="${Resource.msg('transaction.action.capture', 'tamarabm', null)}">${Resource.msg('transaction.action.capture', 'tamarabm', null)}</button>
+                </isif>
+                <isif condition="${tamaraOrder.getAvailableActions()['cancel'] > 0}">
+                    <button class="button js_tamara_action" data-action="void" data-title="${Resource.msg('transaction.void.title', 'tamarabm', null)}" type="button" name="${Resource.msg('transaction.action.cancel', 'tamarabm', null)}">${Resource.msg('transaction.action.cancel', 'tamarabm', null)}</button>
+                </isif>
+                <isif condition="${tamaraOrder.getAvailableActions()['refund'] > 0}">
+                    <button class="button js_tamara_action" data-action="refund" data-title="${Resource.msg('transaction.refund.title', 'tamarabm', null)}" type="button" name="${Resource.msg('transaction.action.refund', 'tamarabm', null)}">${Resource.msg('transaction.action.refund', 'tamarabm', null)}</button>
+                </isif>
+            </td>
+        </tr>
+    </table>
+    <isinclude template="tamarabm/components/transactionDetail" />
+    
+</isdecorate>

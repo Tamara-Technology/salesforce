@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<extensions xmlns="http://www.demandware.com/xml/bmmodules/2007-12-11"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.demandware.com/xml/bmmodules/2007-12-11 bmext.xsd">
+
+	<menuaction id="tamara_transactions_manager" menupath="orders" position="200" site="true">
+		<name xml:lang="x-default">Tamara Transactions</name>
+		<short_description xml:lang="x-default">Manage the Tamara transactions related with this site orders.</short_description>
+		<description xml:lang="x-default">Manage the Tamara transactions related with this site orders.</description>
+		<exec pipeline="TamaraAdmin" node="Orders" />
+		<sub-pipelines>
+			<pipeline name="TamaraAdmin-Orders" />
+			<pipeline name="TamaraAdmin-OrderTransaction" />
+			<pipeline name="TamaraAdmin-Action" />
+			<pipeline name="TamaraAdmin-CreateNewTransaction" />
+		</sub-pipelines>
+		<icon>tamarabm/images/tamara-icon.png</icon>
+	</menuaction>
+
+</extensions>

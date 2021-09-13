@@ -1,0 +1,8 @@
+{
+    "caches": [
+        {
+            "id": "tamaraRestOauthToken",
+            "expireAfterSeconds": 32000
+        }
+    ]
+}

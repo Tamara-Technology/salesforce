@@ -1,0 +1,38 @@
+<table class="tamarabm_transaction_detail_table infobox w e s n">
+        <tr class="tamarabm_gray">
+            <td class="infobox_title top">${Resource.msg('transaction.detail.shipaddress', 'tamarabm', null)}:</td>
+
+            <isset name="address" value="${purchaseUnits.shipping.address}" scope="page">
+            <isset name="shiptoname" value="${purchaseUnits.shipping.name.full_name}" scope="page">
+            <isif condition="${shiptoname === null}">
+                <isset name="shiptoname" value="No name" scope="page">
+            </isif>
+            <isset name="shiptostreet" value="${address && address.address_line_1}" scope="page">
+            <isif condition="${shiptostreet === null}">
+                <isset name="shiptostreet" value="No street" scope="page">
+            </isif>
+            <isset name="shiptostreet2" value="${address && address.address_line_2}" scope="page">
+            <isif condition="${shiptostreet2 === null}">
+                <isset name="shiptostreet2" value="No address" scope="page">
+            </isif>
+            <isset name="shiptocity" value="${address && address.admin_area_2}" scope="page">
+            <isif condition="${shiptocity === null}">
+                <isset name="shiptocity" value="No city" scope="page">
+            </isif>
+            <isset name="shiptostate" value="${address && address.country_code}" scope="page">
+            <isif condition="${shiptostate === null}">
+                <isset name="shiptostate" value="No state" scope="page">
+            </isif>
+            <isset name="shiptozip" value="${address && address.postal_code}" scope="page">
+            <isif condition="${shiptozip === null}">
+                <isset name="shiptozip" value="" scope="page">
+            </isif>
+            <isset name="shiptocountry" value="${address && address.admin_area_1}" scope="page">
+            <isif condition="${shiptocountry === null}">
+                <isset name="shiptocountry" value="" scope="page">
+            </isif>
+            <td class="infobox_item top" colspan="3">
+                <isprint value="${Resource.msgf('transaction.detail.shipaddressformat', 'tamarabm', null, shiptoname, shiptostreet, shiptostreet2, shiptocity, shiptostate, shiptozip, shiptocountry)}" encoding="jshtml"/>
+            </td>
+        </tr>
+    </table>

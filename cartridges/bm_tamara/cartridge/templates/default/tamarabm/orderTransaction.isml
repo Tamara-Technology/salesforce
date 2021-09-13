@@ -1,0 +1,82 @@
+<isdecorate template="tamarabm/util/pt_tamara">
+
+<isinclude template="inc/Modules">
+<isinclude template="tamarabm/util/modules">
+
+<isset name="transaction" value="${pdict.transaction}" scope="page">
+<isset name="transactionID" value="${pdict.transactionID}" scope="page">
+<isset name="authorizationId" value="${pdict.authorizationId}" scope="page">
+<isset name="purchaseUnits" value="${transaction.purchase_units[0]}" scope="page">
+<isset name="payerData" value="${transaction.payer}" scope="page">
+<isset name="shippingAmount" value="${pdict.shippingAmount}" scope="page">
+<isset name="taxAmount" value="${pdict.taxAmount}" scope="page">
+<isset name="handleAmount" value="${pdict.handleAmount}" scope="page">
+<isset name="email" value="${pdict.email}" scope="page">
+<isset name="order" value="${pdict.order}" scope="page">
+<isset name="isCustomOrder" value="${pdict.isCustomOrder}" scope="page">
+<isset name="orderTransactionsIds" value="${pdict.orderTransactionsIds}" scope="page">
+
+<div class="js_tamarabm_order_detail" data-orderNo="${order.orderNo}" data-iscustom="${isCustomOrder ? true : false}" data-currencycode="${order.currencyCode}"></div>
+
+<div class="tamarabm_header">
+    <isset name="ordersUrl" value="${URLUtils.url('SiteNavigationBar-ShowMenuitemOverview', 'CurrentMenuItemId', 'orders')}" scope="page">
+    <isset name="transactionsUrl" value="${URLUtils.url('TamaraAdmin-Orders')}" scope="page">
+    <isbreadcrumb
+        name1="Ordering" url1="${ordersUrl}"
+        name2="Tamara Transactions" url2="${transactionsUrl}"
+        name3="${Resource.msgf('ordertransaction.breadcrumb', 'tamarabm', null, order.orderNo)}">
+
+    <table>
+        <tr><td width="100%" class="table_title w e s n">${Resource.msgf('ordertransaction.title', 'tamarabm', null, order.orderNo)}</td></tr>
+        <tr><td class="w e s"></td></tr>
+        <iscomment><tr><td class="table_title_description e w s"><p>${Resource.msg('ordertransaction.description', 'tamarabm', null)}</p></td></tr></iscomment>
+    </table>
+</div>
+
+    <div class="tamarabm_selectother_transactions">
+        <span>${Resource.msg('ordertransaction.othertransactions', 'tamarabm', null)}:</span>
+        <select class="js_tamarabm_order_transactions_ids">
+            <option value="" >${transactionID}</option>
+            <isif condition="${!empty(transaction.captures)}">
+                <isloop items="${transaction.captures}" var="captureID">
+                    <option value="${captureID.id}" ${captureID.id === transaction.captureID ? 'selected="selected"' : ''}>${Resource.msg('capture.amount', 'tamarabm', null)} ${captureID.id}</option>
+                </isloop>
+            </isif>
+        </select>
+    </div>
+
+<h2>${Resource.msgf('transaction.detail.title', 'tamarabm', null, transactionID)}</h2>
+
+<isif condition="${!empty(transaction.captureID)}">
+    <h2>${Resource.msgf('capture.detail.title', 'tamarabm', null, transaction.captureID)}</h2>
+</isif>
+
+<table class="tamarabm_transaction_detail_table infobox w e s n">
+    <tr>
+        <td class="infobox_title top">${Resource.msg('transaction.detail.customername', 'tamarabm', null)}:</td>
+        <td class="infobox_item top">
+            ${Resource.msgf('transaction.detail.customerformatwithstatus', 'tamarabm', null, transaction.firstname, transaction.lastname)}
+        </td>
+    </tr>
+    <tr class="tamarabm_gray">
+        <td class="infobox_title top">${Resource.msg('transaction.detail.customeremail', 'tamarabm', null)}:</td>
+        <td class="infobox_item top">${email}</td>
+    </tr>
+</table>
+
+<isinclude template="tamarabm/transactionDetails/orderAmount" />
+<isinclude template="tamarabm/transactionDetails/invoice" />
+<isinclude template="tamarabm/transactionDetails/orderShipping" />
+
+<div class="tamarabm_footer">
+    <a class="button" href="${transactionsUrl}">&lt;&lt; ${Resource.msg('ordertransaction.backtolist', 'tamarabm', null)}</a>
+</div>
+
+<isinclude template="tamarabm/components/actionCaptureForm"/>
+<isinclude template="tamarabm/components/actionRefundForm"/>
+<isinclude template="tamarabm/components/actionSaleForm"/>
+<isinclude template="tamarabm/components/actionAuthorizationForm"/>
+<isinclude template="tamarabm/components/actionReauthorizeForm"/>
+<isinclude template="tamarabm/components/actionVoidForm"/>
+
+</isdecorate>
