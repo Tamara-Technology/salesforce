@@ -26,24 +26,6 @@
                 <min-length>0</min-length>
                 <default-value>https://api-sandbox.tamara.co</default-value>
             </attribute-definition>
-            <attribute-definition attribute-id="tamaraInstalmentsID">
-                <display-name xml:lang="x-default">Instalments Payment ID</display-name>
-                <description xml:lang="x-default">The Instalment ID return from Tamara API</description>
-                <type>string</type>
-                <mandatory-flag>true</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-                <min-length>0</min-length>
-                <default-value>PAY_BY_INSTALMENTS</default-value>
-            </attribute-definition>
-            <attribute-definition attribute-id="tamaraPaylaterID">
-                <display-name xml:lang="x-default">Paylater ID</display-name>
-                <description xml:lang="x-default">The Instalment ID return from Tamara API</description>
-                <type>string</type>
-                <mandatory-flag>true</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-                <min-length>0</min-length>
-                <default-value>PAY_BY_LATER</default-value>
-            </attribute-definition>
             <attribute-definition attribute-id="tamaraPriorityPDPWidget">
                 <display-name xml:lang="x-default">Priority display PDP widget</display-name>
                 <description xml:lang="x-default">Tamara support 2 types of the widget in the Product page. By default, the PAY_BY_INSTALMENTS widget will be displayed if the product price is eligible. You can change to PAY_BY_LATER if want to display this widget on top</description>
@@ -84,8 +66,6 @@
                 <attribute attribute-id="tamaraEnablement"/>
                 <attribute attribute-id="tamaraEndPoint"/>
                 <attribute attribute-id="tamaraAPIToken"/>
-                <attribute attribute-id="tamaraPaylaterID"/>
-                <attribute attribute-id="tamaraInstalmentsID"/>
                 <attribute attribute-id="tamaraPriorityPDPWidget"/>
                 <attribute attribute-id="tamaraNumberOfInstallments"/>
                 <attribute attribute-id="tamaraSupportedCountries"/>

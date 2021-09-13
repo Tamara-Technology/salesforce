@@ -8,8 +8,15 @@
         <processor-id>TAMARA</processor-id>
     </payment-method>
 
-    <payment-method method-id="TAMARA_INSTALMENTS">
-        <name xml:lang="x-default">Installment</name>
+    <payment-method method-id="TAMARA_3_INSTALMENTS">
+        <name xml:lang="x-default">3 Installments</name>
+        <image>tamara-icon.png</image>
+        <enabled-flag>true</enabled-flag>
+        <processor-id>TAMARA</processor-id>
+    </payment-method>
+
+    <payment-method method-id="TAMARA_6_INSTALMENTS">
+        <name xml:lang="x-default">6 Installments</name>
         <image>tamara-icon.png</image>
         <enabled-flag>true</enabled-flag>
         <processor-id>TAMARA</processor-id>
