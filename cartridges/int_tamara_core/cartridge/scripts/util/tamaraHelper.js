@@ -128,6 +128,14 @@ var tamaraHelperObj = {
 	},
 
 	/**
+	 * Get Tamara's Support Country
+	 * @returns {any} a custom attributes value
+	 */
+	getSupportedCountriesAsString: function () {
+		return new dwutil.ArrayList(this.getCustomPreference('tamaraSupportedCountries')).join(';');
+	},
+
+	/**
 	 * Get Tamara's API Endpoint value
 	 * @returns {any} a custom attributes value
 	 */
@@ -330,9 +338,9 @@ var tamaraHelperObj = {
 		});
 
 		if (widget == this.METHOD_TAMARA_INSTALMENTS) {
-			div = '<div class="tamara-product-widget" data-lang="' + tamaraHelperObj.getCurrentLangCode() + '" data-price="' + productPrice.sales.decimalPrice + '" data-currency="' + productPrice.sales.currency + '" data-country-code="SA;AE" data-payment-type="installment" data-disable-installment="false" data-disable-paylater="true"></div>';
+			div = '<div class="tamara-product-widget" data-lang="' + tamaraHelperObj.getCurrentLangCode() + '" data-price="' + productPrice.sales.decimalPrice + '" data-currency="' + productPrice.sales.currency + '" data-country-code="'+ this.getSupportedCountriesAsString() + '" data-payment-type="installment" data-disable-installment="false" data-disable-paylater="true"></div>';
 		} else if (widget == this.METHOD_TAMARA_6_INSTALMENTS) {
-			div = '<div class="tamara-product-widget" data-lang="' + tamaraHelperObj.getCurrentLangCode() + '" data-price="' + productPrice.sales.decimalPrice + '" data-currency="' + productPrice.sales.currency + '" data-number-of-installments="6" data-country-code="SA;AE" data-payment-type="installment" data-disable-installment="false" data-disable-paylater="true"></div>';
+			div = '<div class="tamara-product-widget" data-lang="' + tamaraHelperObj.getCurrentLangCode() + '" data-price="' + productPrice.sales.decimalPrice + '" data-currency="' + productPrice.sales.currency + '" data-number-of-installments="6" data-country-code="'+ this.getSupportedCountriesAsString() + '" data-payment-type="installment" data-disable-installment="false" data-disable-paylater="true"></div>';
 		} else if (widget == this.METHOD_TAMARA_PAYLATER) {
 			div = '<div class="tamara-product-widget" data-disable-paylater="false" data-pay-later-max-amount="' + maxPayLater + '" data-lang="' + tamaraHelperObj.getCurrentLangCode() + '"></div>';
 		}

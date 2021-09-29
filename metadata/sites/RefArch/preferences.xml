@@ -7,7 +7,7 @@
             <preference preference-id="tamaraEnablement">true</preference>
             <preference preference-id="tamaraEndPoint">https://api-sandbox.tamara.co</preference>
             <preference preference-id="tamaraSupportedCountries">
-                <value>UAE</value>
+                <value>AE</value>
                 <value>SA</value>
             </preference>
             <preference preference-id="tamaraWebhookEvents">["order_approved",
