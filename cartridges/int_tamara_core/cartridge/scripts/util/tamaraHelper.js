@@ -342,7 +342,7 @@ var tamaraHelperObj = {
 		} else if (widget == this.METHOD_TAMARA_6_INSTALMENTS) {
 			div = '<div class="tamara-product-widget" data-lang="' + tamaraHelperObj.getCurrentLangCode() + '" data-price="' + productPrice.sales.decimalPrice + '" data-currency="' + productPrice.sales.currency + '" data-number-of-installments="6" data-country-code="'+ this.getSupportedCountriesAsString() + '" data-payment-type="installment" data-disable-installment="false" data-disable-paylater="true"></div>';
 		} else if (widget == this.METHOD_TAMARA_PAYLATER) {
-			div = '<div class="tamara-product-widget" data-disable-paylater="false" data-pay-later-max-amount="' + maxPayLater + '" data-lang="' + tamaraHelperObj.getCurrentLangCode() + '"></div>';
+			div = '<div class="tamara-product-widget" data-disable-paylater="false" data-payment-type="paylater" data-pay-later-max-amount="' + maxPayLater + '" data-lang="' + tamaraHelperObj.getCurrentLangCode() + '"></div>';
 		}
 
 		return div;
