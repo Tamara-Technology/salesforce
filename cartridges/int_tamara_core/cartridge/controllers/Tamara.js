@@ -47,14 +47,19 @@ server.get('Success', server.middleware.https, function (req, res, next) {
         }
 
         tamaraHelper.placeOrder(req, order, paymentInstrument[0], 'Tamara-Success');
-
-        res.redirect(URLUtils.url(
+        // SFRA 6.0 change
+        /* res.redirect(URLUtils.url(
             'Order-Confirm',
             'ID',
             order.orderNo,
             'token',
             order.orderToken
-        ));
+        )); */
+        res.render('tamara/tamaraOrderConfirmationRedirect', {
+            ID: order.orderNo,
+            token: order.orderToken,
+            actionUrl: URLUtils.url('Order-Confirm').toString()
+        });
         
     } catch (e) {
         tamaraHelper.getTamaraLogger().error(

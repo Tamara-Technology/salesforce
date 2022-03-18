@@ -14,19 +14,15 @@ server.prepend('Begin', function (req, res, next) { // eslint-disable-line
 
     if (tamaraHelper.getEnablementStatus()) {
         viewData.tamara = {
-            isEnablePaylater: false,
             isEnableInstalments: false,
             is6InstalmentsEnabled: false
         };
-   
         try {
             const paymentTypes = tamaraHelper.getSupportedPayments();
             viewData.tamara = {
-                isEnablePaylater: paymentTypes.isPaylaterValid,
                 isEnableInstalments: paymentTypes.isInstalmentValid,
                 is6InstalmentsEnabled: paymentTypes.is6InstalmentValid
             };
-
         } catch (e) {
             tamaraHelper.getTamaraLogger().error(
                 'Tamara: ' + e.toString() + ' in ' + e.fileName + ':' + e.lineNumber

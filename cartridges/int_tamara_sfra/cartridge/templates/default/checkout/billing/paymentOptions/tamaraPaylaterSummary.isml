@@ -1,6 +1,0 @@
-<div class="credit-card-type">
-    <span>${Resource.msg('msg.payment.type.tamara', 'tamara', null)}</span>
-</div>
-<div class="credit-card-number">
-    ${Resource.msg('msg.payment.type.paylater', 'tamara', null)}
-</div>

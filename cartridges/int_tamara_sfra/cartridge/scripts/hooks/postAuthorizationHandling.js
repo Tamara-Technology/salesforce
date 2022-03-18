@@ -7,13 +7,13 @@
  * @param {Object} result - Request & Response object
  */
 function postAuthorization(result, order, options) { // eslint-disable-line no-unused-vars
-  if (!result.error && order.custom.tamaraCheckoutURL) {
-    return {
-      error: false,
-      continueUrl: order.custom.tamaraCheckoutURL
-    };
-  }
-  return {};
+    if (!result.error && order.custom.tamaraCheckoutURL) {
+        return {
+            error: false,
+            continueUrl: order.custom.tamaraCheckoutURL
+        };
+    }
+    return {};
 }
 
 exports.postAuthorization = postAuthorization;

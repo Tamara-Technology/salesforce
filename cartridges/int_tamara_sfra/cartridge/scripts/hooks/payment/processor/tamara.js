@@ -24,7 +24,7 @@ function Handle(basket, paymentInformation, paymentMethodID, req) {
     var collections = require('*/cartridge/scripts/util/collections');
     var serverErrors = [];
 
-    if ([tamaraHelper.METHOD_TAMARA_PAYLATER, tamaraHelper.METHOD_TAMARA_INSTALMENTS, tamaraHelper.METHOD_TAMARA_6_INSTALMENTS].indexOf(paymentMethodID) === -1) {
+    if ([tamaraHelper.METHOD_TAMARA_INSTALMENTS, tamaraHelper.METHOD_TAMARA_6_INSTALMENTS].indexOf(paymentMethodID) === -1) {
         tamaraHelper.getTamaraLogger().error('Tamara: payment method requested "{0}" is incorrect in int_tamara_sfra/cartridge/script/hooks/payment/processor/tamara.js:Handle().', paymentMethodID);
         serverErrors.push(
             Resource.msg('error.paymenttypes.outoflist', 'tamara', null)

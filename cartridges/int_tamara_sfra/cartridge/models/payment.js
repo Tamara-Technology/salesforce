@@ -8,15 +8,15 @@ const base = module.superModule;
  *      current cart
  */
 function applicablePaymentMethods(paymentMethods) {
-  const collections = require('*/cartridge/scripts/util/collections');
+    const collections = require('*/cartridge/scripts/util/collections');
 
-  return collections.map(paymentMethods, function (method) {
-      return {
-          ID: method.ID,
-          name: method.name,
-          image: method.image
-      };
-  });
+    return collections.map(paymentMethods, function (method) {
+        return {
+            ID: method.ID,
+            name: method.name,
+            image: method.image
+        };
+    });
 }
 
 /**
@@ -27,18 +27,18 @@ function applicablePaymentMethods(paymentMethods) {
  * @constructor
  */
 function Payment(currentBasket, currentCustomer, countryCode) {
-  var PaymentMgr = require('dw/order/PaymentMgr');
+    var PaymentMgr = require('dw/order/PaymentMgr');
 
-  base.call(this, currentBasket, currentCustomer, countryCode);
-  var paymentAmount = currentBasket.totalGrossPrice;
-  var paymentMethods = PaymentMgr.getApplicablePaymentMethods(
-      currentCustomer,
-      countryCode,
-      paymentAmount.value
-  );
+    base.call(this, currentBasket, currentCustomer, countryCode);
+    var paymentAmount = currentBasket.totalGrossPrice;
+    var paymentMethods = PaymentMgr.getApplicablePaymentMethods(
+        currentCustomer,
+        countryCode,
+        paymentAmount.value
+    );
 
-  this.applicablePaymentMethods =
-    paymentMethods ? applicablePaymentMethods(paymentMethods) : null;
+    this.applicablePaymentMethods =
+      paymentMethods ? applicablePaymentMethods(paymentMethods) : null;
 }
 
 module.exports = Payment;

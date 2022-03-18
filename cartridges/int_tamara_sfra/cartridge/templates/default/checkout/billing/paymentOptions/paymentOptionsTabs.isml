@@ -5,11 +5,9 @@
 <isloop items="${pdict.order.billing.payment.applicablePaymentMethods}" var="paymentOption">
     <isif condition="${paymentOption.ID === tamaraHelper.METHOD_CREDIT_CARD}">
         <isinclude template="checkout/billing/paymentOptions/creditCardTab" />
-    <iselseif condition="${paymentOption.ID === tamaraHelper.METHOD_TAMARA_PAYLATER && tamaraHelper.getEnablementStatus() && pdict.tamara.isEnablePaylater}" />
-        <isinclude template="checkout/billing/paymentOptions/tamaraTab" />
     <iselseif condition="${paymentOption.ID === tamaraHelper.METHOD_TAMARA_INSTALMENTS && tamaraHelper.getEnablementStatus() && pdict.tamara.isEnableInstalments}" />
         <isinclude template="checkout/billing/paymentOptions/tamaraTab" />
     <iselseif condition="${paymentOption.ID === tamaraHelper.METHOD_TAMARA_6_INSTALMENTS && tamaraHelper.getEnablementStatus() && pdict.tamara.is6InstalmentsEnabled}" />
-    <isinclude template="checkout/billing/paymentOptions/tamaraTab" />
+        <isinclude template="checkout/billing/paymentOptions/tamaraTab" />
     </isif>
 </isloop>

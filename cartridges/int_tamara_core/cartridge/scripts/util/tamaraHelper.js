@@ -13,15 +13,11 @@ var tamaraHelperObj = {
 
 	PROCESSOR_TAMARA: 'TAMARA',
 
-	METHOD_TAMARA_PAYLATER: 'TAMARA_PAYLATER',
-
 	METHOD_TAMARA_INSTALMENTS: 'TAMARA_3_INSTALMENTS',
 
 	METHOD_TAMARA_6_INSTALMENTS: 'TAMARA_6_INSTALMENTS',
 
 	PAY_BY_INSTALMENTS: 'PAY_BY_INSTALMENTS',
-
-	PAY_BY_LATER: 'PAY_BY_LATER',
 
 	METHOD_CREDIT_CARD: 'CREDIT_CARD',
 
@@ -148,17 +144,28 @@ var tamaraHelperObj = {
 	 * @returns {any} a custom attributes value
 	 */
 	getPriorityPDPWidget: function () {
-		if (this.getCustomPreference('tamaraPriorityPDPWidget') === this.PAY_BY_INSTALMENTS && this.getNumberOfInstallments() == 3) {
+		if (this.getCustomPreference('tamaraPriorityPDPWidgets').value === this.METHOD_TAMARA_INSTALMENTS) {
 			return this.METHOD_TAMARA_INSTALMENTS;
 		}
 
-		if (this.getCustomPreference('tamaraPriorityPDPWidget') === this.PAY_BY_INSTALMENTS && this.getNumberOfInstallments() == 6) {
+		if (this.getCustomPreference('tamaraPriorityPDPWidgets').value === this.METHOD_TAMARA_6_INSTALMENTS) {
 			return this.METHOD_TAMARA_6_INSTALMENTS;
 		}
-
-		return this.METHOD_TAMARA_PAYLATER;
 	},
-
+	/**
+	 * show pdp payment widget or not
+	 * @returns {any} a custom attributes value
+	 */
+	showPDPWidget: function () {
+		return preferenceCurrentSite.getCustomPreferenceValue('tamaraPDPWidgetEnablement');
+	},
+	/**
+	 * show pdp payment widget or not if the product price less than min limit
+	 * @returns {any} a custom attributes value
+	 */
+	showPDPWidgetWithoutMinLimit: function () {
+		return preferenceCurrentSite.getCustomPreferenceValue('tamaraPDPWidgetWithoutMinLimit');
+	},
 	/**
 	 * Get Number Of Installments
 	 * @returns {any} a custom attributes value
@@ -193,8 +200,6 @@ var tamaraHelperObj = {
 			case this.METHOD_TAMARA_INSTALMENTS:
 			case this.METHOD_TAMARA_6_INSTALMENTS:
 				return this.PAY_BY_INSTALMENTS;
-			case this.METHOD_TAMARA_PAYLATER:
-				return this.PAY_BY_LATER;
 			default:
 				throw new Error('tamaraHelper.getPaymentTypeID() Not found payment type: ' + type);
 		}
@@ -276,7 +281,6 @@ var tamaraHelperObj = {
 	getSupportedPayments: function () {
 		const currentBasket = require('dw/order/BasketMgr').getCurrentBasket();
 		let isInstalmentValid = false;
-		let isPaylaterValid = false;
 		let is6InstalmentValid = false;
 		const paymentTypes = this.fetchSupportedPayments();
 
@@ -287,9 +291,7 @@ var tamaraHelperObj = {
 				throw new Error('Error in tamaraHelper.getAllowPaymentRange() | Message: Tamara API doesn\'t not response the right Min/MAX value: ' + JSON.stringify(paymentTypes));
 			}
 
-			if (ptype.name == this.METHOD_TAMARA_PAYLATER) {
-				isPaylaterValid = !!currentBasket && currentBasket.totalGrossPrice >= ptype.min_limit.amount && currentBasket.totalGrossPrice <= ptype.max_limit.amount;
-			} else if (ptype.name == this.METHOD_TAMARA_INSTALMENTS) {
+			if (ptype.name == this.METHOD_TAMARA_INSTALMENTS) {
 				isInstalmentValid = !!currentBasket && currentBasket.totalGrossPrice >= ptype.min_limit.amount && currentBasket.totalGrossPrice <= ptype.max_limit.amount;
 			} else if (ptype.name === this.METHOD_TAMARA_6_INSTALMENTS) {
 				is6InstalmentValid = !!currentBasket && currentBasket.totalGrossPrice >= ptype.min_limit.amount && currentBasket.totalGrossPrice <= ptype.max_limit.amount;
@@ -297,7 +299,6 @@ var tamaraHelperObj = {
 		});
 
 		return {
-			"isPaylaterValid": isPaylaterValid,
 			"isInstalmentValid": isInstalmentValid,
 			"is6InstalmentValid": is6InstalmentValid
 		};
@@ -311,9 +312,8 @@ var tamaraHelperObj = {
 	getProductWidget: function (productPrice) {
 		let widget = '';
 		let div = '';
-		let maxPayLater = 0;
 		let paymentTypes = this.fetchSupportedPayments();
-
+		let showPDPWidgetWithoutMinLimit = this.showPDPWidgetWithoutMinLimit();
 		let shouldSkip = false;
 		let _this = this;
 
@@ -323,16 +323,12 @@ var tamaraHelperObj = {
 			}
 
 			let ptype = JSON.parse(object.getCustom()['content']);
-			if (productPrice.sales.decimalPrice >= ptype.min_limit.amount && productPrice.sales.decimalPrice <= ptype.max_limit.amount) {
+			if ((productPrice.sales.decimalPrice >= ptype.min_limit.amount || showPDPWidgetWithoutMinLimit) && productPrice.sales.decimalPrice <= ptype.max_limit.amount) {
 				if (ptype.name == _this.getPriorityPDPWidget()) {
 					widget = _this.getPriorityPDPWidget();
 					shouldSkip = true;
 				} else {
 					widget = ptype.name;
-				}
-
-				if (ptype.name == _this.METHOD_TAMARA_PAYLATER) {
-					maxPayLater = ptype.max_limit.amount
 				}
 			}
 		});
@@ -341,10 +337,7 @@ var tamaraHelperObj = {
 			div = '<div class="tamara-product-widget" data-lang="' + tamaraHelperObj.getCurrentLangCode() + '" data-price="' + productPrice.sales.decimalPrice + '" data-currency="' + productPrice.sales.currency + '" data-country-code="'+ this.getSupportedCountriesAsString() + '" data-payment-type="installment" data-disable-installment="false" data-disable-paylater="true"></div>';
 		} else if (widget == this.METHOD_TAMARA_6_INSTALMENTS) {
 			div = '<div class="tamara-product-widget" data-lang="' + tamaraHelperObj.getCurrentLangCode() + '" data-price="' + productPrice.sales.decimalPrice + '" data-currency="' + productPrice.sales.currency + '" data-number-of-installments="6" data-country-code="'+ this.getSupportedCountriesAsString() + '" data-payment-type="installment" data-disable-installment="false" data-disable-paylater="true"></div>';
-		} else if (widget == this.METHOD_TAMARA_PAYLATER) {
-			div = '<div class="tamara-product-widget" data-disable-paylater="false" data-payment-type="paylater" data-pay-later-max-amount="' + maxPayLater + '" data-lang="' + tamaraHelperObj.getCurrentLangCode() + '"></div>';
-		}
-
+		} 
 		return div;
 	},
 
@@ -574,11 +567,6 @@ var tamaraHelperObj = {
 								paymentTypes.push(type);
 							}
 						});
-					} else {
-						paymentType['name'] = this.METHOD_TAMARA_PAYLATER;
-						const type = CustomObjectMgr.createCustomObject(tamaraHelperObj.TAMARA_PAYMENTTYPES_OBJECT, this.METHOD_TAMARA_PAYLATER);
-						type.getCustom()['content'] = JSON.stringify(paymentType);
-						paymentTypes.push(type);
 					}
 				});
 			});

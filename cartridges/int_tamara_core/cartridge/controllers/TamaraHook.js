@@ -19,7 +19,7 @@ server.use('Listen', server.middleware.https, function (req, res, next) {
             );
         }
         const paymentInstruments = order.getPaymentInstruments().toArray().filter(function (instrument) {
-            return [tamaraHelper.METHOD_TAMARA_PAYLATER, tamaraHelper.METHOD_TAMARA_INSTALMENTS, tamaraHelper.METHOD_TAMARA_6_INSTALMENTS].indexOf(instrument.paymentMethod) !== -1;
+            return [tamaraHelper.METHOD_TAMARA_INSTALMENTS, tamaraHelper.METHOD_TAMARA_6_INSTALMENTS].indexOf(instrument.paymentMethod) !== -1;
         });
         if(!paymentInstruments.length){
             throw new Error(

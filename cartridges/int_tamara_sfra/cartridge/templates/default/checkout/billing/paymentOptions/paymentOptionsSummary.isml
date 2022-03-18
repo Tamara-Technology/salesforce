@@ -6,8 +6,6 @@
     <isloop items="${pdict.order.billing.payment.selectedPaymentInstruments}" var="payment">
         <isif condition="${payment.paymentMethod === 'CREDIT_CARD'}">
             <isinclude template="checkout/billing/paymentOptions/creditCardSummary" />
-        <iselseif condition="${payment.paymentMethod === tamaraHelper.METHOD_TAMARA_PAYLATER}" />
-            <isinclude template="checkout/billing/paymentOptions/tamaraPaylaterSummary" />
         <iselseif condition="${payment.paymentMethod === tamaraHelper.METHOD_TAMARA_INSTALMENTS}" />
             <isinclude template="checkout/billing/paymentOptions/tamaraInstalmentsSummary" />
         <iselseif condition="${payment.paymentMethod === tamaraHelper.METHOD_TAMARA_6_INSTALMENTS}" />

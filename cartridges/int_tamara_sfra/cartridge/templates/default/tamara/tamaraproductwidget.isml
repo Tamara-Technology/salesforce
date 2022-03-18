@@ -6,13 +6,13 @@ The tooltip will not display if:
 3. The product has a range of prices
 Merchant can update your logic in the condition below.
 </iscomment>
-<isset name="price" value="${product.price}" scope="page" />
-<isif condition="${pdict.product.productType !== 'set' && !price.type && price.sales}">
-    <isscript>
-        var tamaraHelper = require('*/cartridge/scripts/util/tamaraHelper');
-        var widget = tamaraHelper.getProductWidget(price);
-    </isscript>
-
+<isset name="price" value="${pdict.product.price}" scope="page" />
+<isscript>
+    var tamaraHelper = require('*/cartridge/scripts/util/tamaraHelper');
+    var showPDPWidget = tamaraHelper.showPDPWidget();
+    var widget = tamaraHelper.getProductWidget(price);
+</isscript>
+<isif condition="${showPDPWidget && pdict.product.productType !== 'set' && !price.type && price.sales}">
     <isif condition="${widget}">
         <div class="col-sm-12">
             <isprint value="${widget}" encoding="off" />

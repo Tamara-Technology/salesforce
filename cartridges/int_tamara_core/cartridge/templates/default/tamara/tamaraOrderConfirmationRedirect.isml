@@ -1,0 +1,11 @@
+<html>
+	<body>
+		<form action="${pdict.actionUrl}" id="tamara_checkout" name="tamara_checkout" method="post">
+			<input id="orderID" name="orderID" value="${pdict.ID}" type="hidden">
+			<input id="orderToken" name="orderToken" value="${pdict.token}" type="hidden">
+		</form>
+		<script type="text/javascript">
+			document.getElementById("tamara_checkout").submit();
+		</script>
+	</body>
+</html>
