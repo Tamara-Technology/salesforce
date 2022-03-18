@@ -26,24 +26,39 @@
                 <min-length>0</min-length>
                 <default-value>https://api-sandbox.tamara.co</default-value>
             </attribute-definition>
-            <attribute-definition attribute-id="tamaraPriorityPDPWidget">
+            <attribute-definition attribute-id="tamaraPDPWidgetEnablement">
+                <display-name xml:lang="x-default">Enable Tamara PDP Widget</display-name>
+                <description xml:lang="x-default">To enable Tamara PDP Widget</description>
+                <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <default-value>true</default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="tamaraPDPWidgetWithoutMinLimit">
+                <display-name xml:lang="x-default">Show PDP Widget Without Minimum Limit</display-name>
+                <description xml:lang="x-default">Show PDP widget even if price lower than minimum limit.</description>
+                <type>boolean</type>
+                <mandatory-flag>true</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <default-value>false</default-value>
+            </attribute-definition>
+			<attribute-definition attribute-id="tamaraPriorityPDPWidgets">
                 <display-name xml:lang="x-default">Priority display PDP widget</display-name>
-                <description xml:lang="x-default">Tamara support 2 types of the widget in the Product page. By default, the PAY_BY_INSTALMENTS widget will be displayed if the product price is eligible. You can change to PAY_BY_LATER if want to display this widget on top</description>
-                <type>string</type>
+                <description xml:lang="x-default">Tamara support 2 types of the widget in the Product Page : TAMARA_3_INSTALMENTS , TAMARA_6_INSTALMENTS</description>
+                <type>enum-of-string</type>
                 <mandatory-flag>true</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
-                <min-length>0</min-length>
-                <default-value>PAY_BY_INSTALMENTS</default-value>
-            </attribute-definition>
-            <attribute-definition attribute-id="tamaraNumberOfInstallments">
-                <display-name xml:lang="x-default">NumberOf Installments</display-name>
-                <description xml:lang="x-default">NumberOf Installments</description>
-                <type>string</type>
-                <mandatory-flag>true</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-                <min-length>0</min-length>
-                <default-value>3</default-value>
-            </attribute-definition>
+                <value-definitions>
+                    <value-definition default="true">
+                        <display xml:lang="x-default">3-INSTALMENTS</display>
+                        <value>TAMARA_3_INSTALMENTS</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">6-INSTALMENTS</display>
+                        <value>TAMARA_6_INSTALMENTS</value>
+                    </value-definition>
+                </value-definitions>
+            </attribute-definition>           
             <attribute-definition attribute-id="tamaraSupportedCountries">
                 <display-name xml:lang="x-default">Supported Countries</display-name>
                 <description xml:lang="x-default">The list of supported Country Code which is supported by Tamara</description>
@@ -66,8 +81,9 @@
                 <attribute attribute-id="tamaraEnablement"/>
                 <attribute attribute-id="tamaraEndPoint"/>
                 <attribute attribute-id="tamaraAPIToken"/>
-                <attribute attribute-id="tamaraPriorityPDPWidget"/>
-                <attribute attribute-id="tamaraNumberOfInstallments"/>
+                <attribute attribute-id="tamaraPriorityPDPWidgets"/>
+                <attribute attribute-id="tamaraPDPWidgetEnablement"/>
+				<attribute attribute-id="tamaraPDPWidgetWithoutMinLimit"/>
                 <attribute attribute-id="tamaraSupportedCountries"/>
                 <attribute attribute-id="tamaraWebhookEvents"/>
             </attribute-group>
