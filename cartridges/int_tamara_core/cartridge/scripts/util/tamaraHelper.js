@@ -191,6 +191,32 @@ var tamaraHelperObj = {
 	},
 
 	/**
+	 * get Total Discount based on the price adjustments
+	 * @param {object} price Adjustments
+	 * @returns {object} discount amount and discount name
+	 */
+	getTotalDiscount: function (priceAdjustments) {
+		var discountIDs = [];
+		var priceAdjustmentsIt = priceAdjustments.iterator();
+		var priceAjustmentAmount = 0;
+		var currencyCode = '';
+		var data = {};
+		while (priceAdjustmentsIt.hasNext()) {
+			var priceAdjustment = priceAdjustmentsIt.next();
+			priceAjustmentAmount += Math.abs(priceAdjustment.getBasePrice().getValue());
+			discountIDs.push(priceAdjustment.promotionID);
+			currencyCode = priceAdjustment.getBasePrice().currencyCode;
+		}
+		if(priceAjustmentAmount != 0) {
+			data.name = discountIDs.join(";");
+			data.amount = { amount: Math.abs(priceAjustmentAmount).toFixed(2), currency: currencyCode };
+			return data;
+		} else {
+			return null;
+		}
+	},
+
+	/**
 	 * Get Tamara's Payment ID base on SFCC Payment Method
 	 * @param {string} type - Payment method in SFCC
 	 * @returns {string} Tamara Payment ID

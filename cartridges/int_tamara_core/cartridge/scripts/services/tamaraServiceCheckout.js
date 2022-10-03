@@ -112,10 +112,7 @@ var tamaraServiceCheckout = {
                 "country_code": shippingAddress.getCountryCode().getValue(),
                 "phone_number": shippingAddress.getPhone()
             },
-            // "discount": {
-            //     "name": "Christmas 2020",
-            //     "amount": {}
-            // },
+            "discount": tamaraHelper.getTotalDiscount(order.priceAdjustments),
             "tax_amount": {
                 "amount": order.getTotalTax().getValue(),
                 "currency": currencyCode
