@@ -1,19 +1,18 @@
 <isinclude template="/components/modules" sf-toolkit="off" />
 
 <isscript>
-    var checkoutWidget = tamaraHelper.getCheckoutWidget(3);
+    var checkoutWidget = tamaraHelper.getCheckoutWidget(3, pdict.tamara.isSingleCheckout);
 </isscript>
 
-<div class="tab-pane ${tamaraHelper.METHOD_TAMARA_INSTALMENTS}-content" id="${tamaraHelper.METHOD_TAMARA_INSTALMENTS}-content" role="tabpanel">
+<div class="tab-pane collapse ${tamaraHelper.METHOD_TAMARA_INSTALMENTS}-content"
+    id="${tamaraHelper.METHOD_TAMARA_INSTALMENTS}-content" role="tabpanel">
     <fieldset class="payment-form-fields">
         <!--- payment method is credit card --->
-        <input type="hidden" class="form-control"
-               name="${pdict.forms.billingForm.paymentMethod.htmlName}"
-               value="${tamaraHelper.METHOD_TAMARA_INSTALMENTS}"
-        >
+        <input type="hidden" class="form-control" name="${pdict.forms.billingForm.paymentMethod.htmlName}"
+            value="${tamaraHelper.METHOD_TAMARA_INSTALMENTS}">
         <isif condition="${checkoutWidget}">
             <isprint value="${checkoutWidget}" encoding="off" />
-            
+
         </isif>
     </fieldset>
 </div>

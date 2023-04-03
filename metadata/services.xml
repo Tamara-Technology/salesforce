@@ -2,49 +2,55 @@
 <services xmlns="http://www.demandware.com/xml/impex/services/2014-09-26">
     <service-credential service-credential-id="tamara.checkout.paymenttypes.cred">
         <url>/checkout/payment-types</url>
-        <user-id/>
+        <user-id />
+        <password masked="true">********</password>
+    </service-credential>
+
+    <service-credential service-credential-id="tamara.checkout.paymentoptionsavailability.cred">
+        <url>/checkout/payment-options-pre-check</url>
+        <user-id />
         <password masked="true">********</password>
     </service-credential>
 
     <service-credential service-credential-id="tamara.checkout.session.cred">
         <url>/checkout</url>
-        <user-id/>
+        <user-id />
         <password masked="true">********</password>
     </service-credential>
 
     <service-credential service-credential-id="tamara.order.authorised.cred">
         <url>/orders/{orderId}/authorise</url>
-        <user-id/>
+        <user-id />
         <password masked="true">********</password>
     </service-credential>
 
     <service-credential service-credential-id="tamara.order.cancel.cred">
         <url>/merchants/orders/{orderId}/cancel</url>
-        <user-id/>
+        <user-id />
         <password masked="true">********</password>
     </service-credential>
 
     <service-credential service-credential-id="tamara.order.detail.cred">
         <url>/merchants/orders/{orderReferenceId}</url>
-        <user-id/>
+        <user-id />
         <password masked="true">********</password>
     </service-credential>
 
     <service-credential service-credential-id="tamara.payment.capture.cred">
         <url>/merchants/orders/{orderId}/capture</url>
-        <user-id/>
+        <user-id />
         <password masked="true">********</password>
     </service-credential>
 
     <service-credential service-credential-id="tamara.payment.refund.cred">
         <url>/merchants/orders/{orderId}/refund</url>
-        <user-id/>
+        <user-id />
         <password masked="true">********</password>
     </service-credential>
 
     <service-credential service-credential-id="tamara.webhook.register.cred">
         <url>/webhooks</url>
-        <user-id/>
+        <user-id />
         <password masked="true">********</password>
     </service-credential>
 
@@ -67,6 +73,17 @@
         <mock-mode-enabled>false</mock-mode-enabled>
         <profile-id>tamara.prof</profile-id>
         <credential-id>tamara.checkout.paymenttypes.cred</credential-id>
+    </service>
+
+    <service service-id="tamara.checkout.paymentoptionsavailability">
+        <service-type>HTTP</service-type>
+        <enabled>true</enabled>
+        <log-prefix>tamaraAPIStatus</log-prefix>
+        <comm-log-enabled>true</comm-log-enabled>
+        <force-prd-enabled>true</force-prd-enabled>
+        <mock-mode-enabled>false</mock-mode-enabled>
+        <profile-id>tamara.prof</profile-id>
+        <credential-id>tamara.checkout.paymentoptionsavailability.cred</credential-id>
     </service>
 
     <service service-id="tamara.checkout.session">

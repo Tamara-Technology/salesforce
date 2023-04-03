@@ -5,26 +5,48 @@
         <custom-attribute-definitions>
             <attribute-definition attribute-id="tamaraAPIToken">
                 <display-name xml:lang="x-default">API Token</display-name>
-                <description xml:lang="x-default">API Token is used in every single request to Tamara API. Merchant, please contact Tamara to get it.</description>
+                <description xml:lang="x-default">API Token is used in every single request to
+                    Tamara API. Merchant, please contact Tamara to get it.</description>
                 <type>text</type>
                 <mandatory-flag>true</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
             </attribute-definition>
             <attribute-definition attribute-id="tamaraEnablement">
                 <display-name xml:lang="x-default">Enable Tamara Payment</display-name>
-                <description xml:lang="x-default">Enable this to enable all Tamara service-related. Disable this setting will also disable the payment on the storefront.</description>
+                <description xml:lang="x-default">Enable this to enable all Tamara service-related.
+                    Disable this setting will also disable the payment on the storefront.</description>
                 <type>boolean</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
             </attribute-definition>
             <attribute-definition attribute-id="tamaraEndPoint">
                 <display-name xml:lang="x-default">Tamara API endpoint</display-name>
-                <description xml:lang="x-default">The API Endpoint from Tamara, this value should be different between sandbox and production.</description>
+                <description xml:lang="x-default">The API Endpoint from Tamara, this value should be
+                    different between sandbox and production.</description>
                 <type>string</type>
                 <mandatory-flag>true</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
                 <default-value>https://api-sandbox.tamara.co</default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="tamaraWidgetJSURL">
+                <display-name xml:lang="x-default">Tamara Widget JS URL</display-name>
+                <description xml:lang="x-default">The URL from Tamara, this value should be
+                    different between sandbox and production.</description>
+                <type>string</type>
+                <mandatory-flag>true</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+                <default-value>https://cdn-sandbox.tamara.co/widget-v2/tamara-widget.js</default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="tamaraWidgetPublicKey">
+                <display-name xml:lang="x-default">Tamara Widget Public Key</display-name>
+                <description xml:lang="x-default">The public key for widget v2</description>
+                <type>string</type>
+                <mandatory-flag>true</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+                <default-value>b59b2673-54e6-49f8-a25d-e7aba2e80bad</default-value>
             </attribute-definition>
             <attribute-definition attribute-id="tamaraPDPWidgetEnablement">
                 <display-name xml:lang="x-default">Enable Tamara PDP Widget</display-name>
@@ -34,34 +56,18 @@
                 <externally-managed-flag>false</externally-managed-flag>
                 <default-value>true</default-value>
             </attribute-definition>
-            <attribute-definition attribute-id="tamaraPDPWidgetWithoutMinLimit">
-                <display-name xml:lang="x-default">Show PDP Widget Without Minimum Limit</display-name>
-                <description xml:lang="x-default">Show PDP widget even if price lower than minimum limit.</description>
+            <attribute-definition attribute-id="tamaraCartWidgetEnablement">
+                <display-name xml:lang="x-default">Enable Tamara Cart Widget</display-name>
+                <description xml:lang="x-default">To enable Tamara Cart Widget</description>
                 <type>boolean</type>
-                <mandatory-flag>true</mandatory-flag>
+                <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
-                <default-value>false</default-value>
+                <default-value>true</default-value>
             </attribute-definition>
-			<attribute-definition attribute-id="tamaraPriorityPDPWidgets">
-                <display-name xml:lang="x-default">Priority display PDP widget</display-name>
-                <description xml:lang="x-default">Tamara support 2 types of the widget in the Product Page : TAMARA_3_INSTALMENTS , TAMARA_6_INSTALMENTS</description>
-                <type>enum-of-string</type>
-                <mandatory-flag>true</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-                <value-definitions>
-                    <value-definition default="true">
-                        <display xml:lang="x-default">3-INSTALMENTS</display>
-                        <value>TAMARA_3_INSTALMENTS</value>
-                    </value-definition>
-                    <value-definition>
-                        <display xml:lang="x-default">6-INSTALMENTS</display>
-                        <value>TAMARA_6_INSTALMENTS</value>
-                    </value-definition>
-                </value-definitions>
-            </attribute-definition>           
             <attribute-definition attribute-id="tamaraSupportedCountries">
                 <display-name xml:lang="x-default">Supported Countries</display-name>
-                <description xml:lang="x-default">The list of supported Country Code which is supported by Tamara</description>
+                <description xml:lang="x-default">The list of supported Country Code which is
+                    supported by Tamara</description>
                 <type>set-of-string</type>
                 <mandatory-flag>true</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
@@ -78,14 +84,15 @@
         <group-definitions>
             <attribute-group group-id="Tamara Payment">
                 <display-name xml:lang="x-default">Tamara Payment Configurations</display-name>
-                <attribute attribute-id="tamaraEnablement"/>
-                <attribute attribute-id="tamaraEndPoint"/>
-                <attribute attribute-id="tamaraAPIToken"/>
-                <attribute attribute-id="tamaraPriorityPDPWidgets"/>
-                <attribute attribute-id="tamaraPDPWidgetEnablement"/>
-				<attribute attribute-id="tamaraPDPWidgetWithoutMinLimit"/>
-                <attribute attribute-id="tamaraSupportedCountries"/>
-                <attribute attribute-id="tamaraWebhookEvents"/>
+                <attribute attribute-id="tamaraEnablement" />
+                <attribute attribute-id="tamaraEndPoint" />
+                <attribute attribute-id="tamaraAPIToken" />
+                <attribute attribute-id="tamaraWidgetJSURL" />
+                <attribute attribute-id="tamaraWidgetPublicKey" />
+                <attribute attribute-id="tamaraPDPWidgetEnablement" />
+                <attribute attribute-id="tamaraCartWidgetEnablement" />
+                <attribute attribute-id="tamaraSupportedCountries" />
+                <attribute attribute-id="tamaraWebhookEvents" />
             </attribute-group>
         </group-definitions>
     </type-extension>
@@ -160,12 +167,26 @@
         <group-definitions>
             <attribute-group group-id="Tamara">
                 <display-name xml:lang="x-default">Tamara</display-name>
-                <attribute attribute-id="tamaraPaymentStatus"/>
-                <attribute attribute-id="tamaraCheckoutURL"/>
-                <attribute attribute-id="tamaraOrderReferenceID"/>
-                <attribute attribute-id="tamaraOrderDetail"/>
+                <attribute attribute-id="tamaraPaymentStatus" />
+                <attribute attribute-id="tamaraCheckoutURL" />
+                <attribute attribute-id="tamaraOrderReferenceID" />
+                <attribute attribute-id="tamaraOrderDetail" />
             </attribute-group>
         </group-definitions>
     </type-extension>
-    
+
+    <type-extension type-id="PaymentTransaction">
+        <custom-attribute-definitions>
+            <attribute-definition attribute-id="tamaraInstalmentNumber">
+                <display-name xml:lang="x-default">Tamara Number Instalment</display-name>
+                <description xml:lang="x-default">Display the number of instalments for
+                    PAY_BY_INSTALMENTS payment method</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+        </custom-attribute-definitions>
+    </type-extension>
+
 </metadata>

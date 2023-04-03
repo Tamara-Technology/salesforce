@@ -1,0 +1,14 @@
+<isinclude template="/components/modules" sf-toolkit="off" />
+
+<isscript>
+    var checkoutWidget = tamaraHelper.getCheckoutWidget(3);
+</isscript>
+
+<div class="tab-pane collapse ${tamaraHelper.METHOD_TAMARA_PAYNOW}-content"
+    id="${tamaraHelper.METHOD_TAMARA_PAYNOW}-content" role="tabpanel">
+    <fieldset class="payment-form-fields">
+        <!--- payment method is credit card --->
+        <input type="hidden" class="form-control" name="${pdict.forms.billingForm.paymentMethod.htmlName}"
+            value="${tamaraHelper.METHOD_TAMARA_PAYNOW}">
+    </fieldset>
+</div>

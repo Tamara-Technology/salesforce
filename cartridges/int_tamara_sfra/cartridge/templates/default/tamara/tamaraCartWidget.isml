@@ -1,0 +1,30 @@
+<isscript>
+    var tamaraHelper = require('*/cartridge/scripts/util/tamaraHelper');
+    var currentBasket = require("dw/order/BasketMgr").getCurrentBasket();
+    var showCartWidget = tamaraHelper.showCartWidget();
+    var widget = tamaraHelper.getProductWidget({
+        sales: {
+            decimalPrice: currentBasket.totalGrossPrice.decimalValue,
+        }
+    });
+    var tamaraWidgetPublicKey = tamaraHelper.getTamaraWidgetPublicKey();
+
+    var assets = require('*/cartridge/scripts/assets.js');
+    assets.addJs('/js/tamaraWidgetUpdate.js');
+</isscript>
+
+<script defer type="text/javascript" src="${tamaraHelper.getWidgetJSURL()}"></script>
+
+<isif condition="${showCartWidget && widget}">
+    <div class="col-sm-12" id="tamara-cart-widget" data-update-url="${URLUtils.abs('Cart-TamaraWidget')}">
+        <isprint value="${widget}" encoding="off" />
+    </div>
+</isif>
+
+<script>
+    window.tamaraWidgetConfig = {
+        lang: "${tamaraHelper.getCurrentLangCode()}",
+        country: "${tamaraHelper.getCurrentCountryCode()}",
+        publicKey: "${tamaraWidgetPublicKey}"
+    }
+</script>

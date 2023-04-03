@@ -1,3 +1,11 @@
+27 March 2023
+- Option to enable Tamara Cart Widget
+- Update to widget v2 base on single_checkout attribute
+- Add Pre-check Payment Options API to Checkout Process
+- Removed the custom preference that not necessary
+- Add new Custom Object TamaraCachePaymentOptionsPreCheckAPI for caching purpose, to avoid customer call API many times
+- Re-render Tamara widget in cart page when price was updated
+
 18 March 2022
 - Option To enable Tamara PDP Widget
 - Option to show tamara widget on PDP if price less than min limit.

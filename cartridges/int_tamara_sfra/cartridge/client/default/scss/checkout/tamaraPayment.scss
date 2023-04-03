@@ -1,0 +1,44 @@
+.payment-information {
+    .payment-options {
+        flex-direction: column !important;
+
+        .nav-item {
+            text-align: left;
+
+            .nav-link {
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+
+                .payment-input-select-custom {
+                    width: 15px;
+                    height: 15px;
+                    min-width: 15px;
+                    min-height: 15px;
+                    border: 1px solid gray;
+                    border-radius: 50%;
+                    position: relative;
+
+                    .input-select {
+                        display: block;
+                        width: 9px;
+                        height: 9px;
+                        background: #005fe0;
+                        top: 2px;
+                        left: 2px;
+                        position: absolute;
+                        border-radius: 50%;
+                    }
+                }
+
+                &.collapsed {
+                    .payment-input-select-custom {
+                        .input-select {
+                            display: none;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

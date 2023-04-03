@@ -1,606 +1,987 @@
 /**
  *The helper for Tamara Payment
  */
-const dwsystem = require('dw/system');
-const dwutil = require('dw/util');
-const Resource = require('dw/web/Resource');
-const tamaraServiceOrderDetail = require('*/cartridge/scripts/services/tamaraServiceOrderDetail');
+const dwsystem = require("dw/system");
+const dwutil = require("dw/util");
+const Resource = require("dw/web/Resource");
+const tamaraServiceOrderDetail = require("*/cartridge/scripts/services/tamaraServiceOrderDetail");
+var collections = require("*/cartridge/scripts/util/collections");
 
 const preferenceCurrentSite = dwsystem.Site.getCurrent();
 
 /* eslint no-var: off */
 var tamaraHelperObj = {
+  PROCESSOR_TAMARA: "TAMARA",
 
-	PROCESSOR_TAMARA: 'TAMARA',
+  METHOD_TAMARA_PAY: "TAMARA_PAY",
 
-	METHOD_TAMARA_INSTALMENTS: 'TAMARA_3_INSTALMENTS',
+  METHOD_TAMARA_PAYNOW: "PAY_NOW",
 
-	METHOD_TAMARA_6_INSTALMENTS: 'TAMARA_6_INSTALMENTS',
+  METHOD_TAMARA_PAYLATER: "TAMARA_PAYLATER",
 
-	PAY_BY_INSTALMENTS: 'PAY_BY_INSTALMENTS',
+  METHOD_PAY_BY_INSTALMENTS: "PAY_BY_INSTALMENTS",
 
-	METHOD_CREDIT_CARD: 'CREDIT_CARD',
+  METHOD_TAMARA_INSTALMENTS: "TAMARA_3_INSTALMENTS",
 
-	TAMARA_PAYMENTTYPES_OBJECT: 'TamaraPaymentTypes',
+  METHOD_TAMARA_6_INSTALMENTS: "TAMARA_6_INSTALMENTS",
 
-	SERVICE: {
-		CHECKOUT: {
-			SESSION: 'tamara.checkout.session',
-			PAYMENTTYPES: 'tamara.checkout.paymenttypes',
-		},
-		ORDER: {
-			AUTHORISED: 'tamara.order.authorised',
-			DETAILED: 'tamara.order.detail',
-			CANCEL: 'tamara.order.cancel',
-		},
-		WEBHOOK: {
-			REGISTER: 'tamara.webhook.register'
-		},
-		PAYMENT: {
-			CAPTURE: 'tamara.payment.capture',
-			REFUND: 'tamara.payment.refund',
-		}
-	},
-	ENCRYPT: {
-		MODE: 'AES/CBC/PKCS5Padding',
-		KEY: 'RmVJTjlTY0hEd1Mxa0FWOA==',
-		IV: 'ZzFONFlQaXBLYmhuSzhVVw=='
-	},
+  PAY_NOW: "PAY_NOW",
 
-	/**
-	 * Generate a token from a string
-	 * @param {string} message a string of message you want to encrypt token
-	 * @returns {string} encrypt message
-	 */
-	generateToken: function (message) {
-		const Cipher = require('dw/crypto/Cipher');
-		var crypto = new Cipher();
-		return crypto.encrypt(message, this.ENCRYPT.KEY, this.ENCRYPT.MODE, this.ENCRYPT.IV, 0);
-	},
+  PAY_LATER: "PAY_NEXT_MONTH",
 
-	/**
-	 * Decrypt a token
-	 * @param {string} message a string of message you want to decrypt
-	 * @returns {string} decrypt message
-	 */
-	decryptToken: function (message) {
-		const Cipher = require('dw/crypto/Cipher');
-		var crypto = new Cipher();
-		return crypto.decrypt(message, this.ENCRYPT.KEY, this.ENCRYPT.MODE, this.ENCRYPT.IV, 0);
-	},
+  PAY_BY_INSTALMENTS: "PAY_BY_INSTALMENTS",
 
-	/**
-	 * Get Current country code from the request
-	 * @returns {string} a Country Code
-	 */
-	getCurrentCountryCode: function () {
-		return dwutil.Locale.getLocale(request.getLocale()).getCountry();
-	},
+  METHOD_CREDIT_CARD: "CREDIT_CARD",
 
-	/**
-	 * Get Current lang code from the request
-	 * @returns {string} a Country Code
-	 */
-	getCurrentLangCode: function () {
-		return dwutil.Locale.getLocale(request.getLocale()).getLanguage();
-	},
+  TAMARA_PAYMENTTYPES_OBJECT: "TamaraPaymentTypes",
 
-	/**
-	 * Get logger for Tamara Payment
-	 * @returns {dw.system.Log} a Log object with a "tamara" prefix name
-	 */
-	getTamaraLogger: function () {
-		return dwsystem.Logger.getLogger('Tamara', 'tamara');
-	},
+  TAMARA_CACHE_API_OBJECT: "TamaraCachePaymentOptionsPreCheckAPI",
 
-	/**
-	 * Get logger for Tamara Payment
-	 * @returns {dw.system.Log} a Log object with a "tamara" prefix name
-	 */
-	getTamaraBMLogger: function () {
-		return dwsystem.Logger.getLogger('TamaraBM', 'tamara');
-	},
+  SERVICE: {
+    CHECKOUT: {
+      SESSION: "tamara.checkout.session",
+      PAYMENTTYPES: "tamara.checkout.paymenttypes",
+      PAYMENT_OPTIONS_AVAIABLE: "tamara.checkout.paymentoptionsavailability",
+    },
+    ORDER: {
+      AUTHORISED: "tamara.order.authorised",
+      DETAILED: "tamara.order.detail",
+      CANCEL: "tamara.order.cancel",
+    },
+    WEBHOOK: {
+      REGISTER: "tamara.webhook.register",
+    },
+    PAYMENT: {
+      CAPTURE: "tamara.payment.capture",
+      REFUND: "tamara.payment.refund",
+    },
+  },
+  ENCRYPT: {
+    MODE: "AES/CBC/PKCS5Padding",
+    KEY: "RmVJTjlTY0hEd1Mxa0FWOA==",
+    IV: "ZzFONFlQaXBLYmhuSzhVVw==",
+  },
 
-	/**
-	 * Get Tamara's custom preference attribute base on ID
-	 * @param {string} field custom attribute's id
-	 * @returns {any} a custom attributes for tamara payment preference
-	 */
-	getCustomPreference: function (field) {
-		let customPreference = null;
-		if (preferenceCurrentSite && preferenceCurrentSite.getCustomPreferenceValue(field)) {
-			customPreference = preferenceCurrentSite.getCustomPreferenceValue(field);
-		}
-		return customPreference;
-	},
+  /**
+   * Generate a token from a string
+   * @param {string} message a string of message you want to encrypt token
+   * @returns {string} encrypt message
+   */
+  generateToken: function (message) {
+    const Cipher = require("dw/crypto/Cipher");
+    var crypto = new Cipher();
+    return crypto.encrypt(
+      message,
+      this.ENCRYPT.KEY,
+      this.ENCRYPT.MODE,
+      this.ENCRYPT.IV,
+      0
+    );
+  },
 
-	/**
-	 * Get Tamara's enablement status
-	 * @returns {any} a custom attributes value
-	 */
-	getEnablementStatus: function () {
-		return this.getCustomPreference('tamaraEnablement') &&
-			new dwutil.ArrayList(this.getCustomPreference('tamaraSupportedCountries')).indexOf(this.getCurrentCountryCode()) !== -1;
-	},
+  /**
+   * Decrypt a token
+   * @param {string} message a string of message you want to decrypt
+   * @returns {string} decrypt message
+   */
+  decryptToken: function (message) {
+    const Cipher = require("dw/crypto/Cipher");
+    var crypto = new Cipher();
+    return crypto.decrypt(
+      message,
+      this.ENCRYPT.KEY,
+      this.ENCRYPT.MODE,
+      this.ENCRYPT.IV,
+      0
+    );
+  },
 
-	/**
-	 * Get Tamara's Support Country
-	 * @returns {any} a custom attributes value
-	 */
-	getSupportedCountriesAsString: function () {
-		return new dwutil.ArrayList(this.getCustomPreference('tamaraSupportedCountries')).join(';');
-	},
+  /**
+   * Get Current country code from the request
+   * @returns {string} a Country Code
+   */
+  getCurrentCountryCode: function () {
+    return dwutil.Locale.getLocale(request.getLocale()).getCountry();
+  },
 
-	/**
-	 * Get Tamara's API Endpoint value
-	 * @returns {any} a custom attributes value
-	 */
-	getAPIEndPoint: function () {
-		return this.getCustomPreference('tamaraEndPoint');
-	},
+  /**
+   * Get Current lang code from the request
+   * @returns {string} a Country Code
+   */
+  getCurrentLangCode: function () {
+    return dwutil.Locale.getLocale(request.getLocale()).getLanguage();
+  },
 
-	/**
-	 * Get Priority PDP Widget
-	 * @returns {any} a custom attributes value
-	 */
-	getPriorityPDPWidget: function () {
-		if (this.getCustomPreference('tamaraPriorityPDPWidgets').value === this.METHOD_TAMARA_INSTALMENTS) {
-			return this.METHOD_TAMARA_INSTALMENTS;
-		}
+  /**
+   * Get logger for Tamara Payment
+   * @returns {dw.system.Log} a Log object with a "tamara" prefix name
+   */
+  getTamaraLogger: function () {
+    return dwsystem.Logger.getLogger("Tamara", "tamara");
+  },
 
-		if (this.getCustomPreference('tamaraPriorityPDPWidgets').value === this.METHOD_TAMARA_6_INSTALMENTS) {
-			return this.METHOD_TAMARA_6_INSTALMENTS;
-		}
-	},
-	/**
-	 * show pdp payment widget or not
-	 * @returns {any} a custom attributes value
-	 */
-	showPDPWidget: function () {
-		return preferenceCurrentSite.getCustomPreferenceValue('tamaraPDPWidgetEnablement');
-	},
-	/**
-	 * show pdp payment widget or not if the product price less than min limit
-	 * @returns {any} a custom attributes value
-	 */
-	showPDPWidgetWithoutMinLimit: function () {
-		return preferenceCurrentSite.getCustomPreferenceValue('tamaraPDPWidgetWithoutMinLimit');
-	},
-	/**
-	 * Get Number Of Installments
-	 * @returns {any} a custom attributes value
-	 */
-	getNumberOfInstallments: function () {
-		return this.getCustomPreference('tamaraNumberOfInstallments');
-	},
+  /**
+   * Get logger for Tamara Payment
+   * @returns {dw.system.Log} a Log object with a "tamara" prefix name
+   */
+  getTamaraBMLogger: function () {
+    return dwsystem.Logger.getLogger("TamaraBM", "tamara");
+  },
 
-	/**
-	 * Get Tamara's APIToken value
-	 * @returns {any} a custom attributes value
-	 */
-	getAPIToken: function () {
-		return this.getCustomPreference('tamaraAPIToken');
-	},
+  /**
+   * Get Tamara's custom preference attribute base on ID
+   * @param {string} field custom attribute's id
+   * @returns {any} a custom attributes for tamara payment preference
+   */
+  getCustomPreference: function (field) {
+    let customPreference = null;
+    if (
+      preferenceCurrentSite &&
+      preferenceCurrentSite.getCustomPreferenceValue(field)
+    ) {
+      customPreference = preferenceCurrentSite.getCustomPreferenceValue(field);
+    }
+    return customPreference;
+  },
 
-	/**
-	 * Get Webhoook events supported
-	 * @returns {any} a custom attributes value
-	 */
-	getWebhookEvents: function () {
-		return this.getCustomPreference('tamaraWebhookEvents');
-	},
+  /**
+   * Get Tamara's enablement status
+   * @returns {any} a custom attributes value
+   */
+  getEnablementStatus: function () {
+    return (
+      this.getCustomPreference("tamaraEnablement") &&
+      new dwutil.ArrayList(
+        this.getCustomPreference("tamaraSupportedCountries")
+      ).indexOf(this.getCurrentCountryCode()) !== -1
+    );
+  },
 
-	/**
-	 * get Total Discount based on the price adjustments
-	 * @param {object} price Adjustments
-	 * @returns {object} discount amount and discount name
-	 */
-	getTotalDiscount: function (priceAdjustments) {
-		var discountIDs = [];
-		var priceAdjustmentsIt = priceAdjustments.iterator();
-		var priceAjustmentAmount = 0;
-		var currencyCode = '';
-		var data = {};
-		while (priceAdjustmentsIt.hasNext()) {
-			var priceAdjustment = priceAdjustmentsIt.next();
-			priceAjustmentAmount += Math.abs(priceAdjustment.getBasePrice().getValue());
-			discountIDs.push(priceAdjustment.promotionID);
-			currencyCode = priceAdjustment.getBasePrice().currencyCode;
-		}
-		if(priceAjustmentAmount != 0) {
-			data.name = discountIDs.join(";");
-			data.amount = { amount: Math.abs(priceAjustmentAmount).toFixed(2), currency: currencyCode };
-			return data;
-		} else {
-			return null;
-		}
-	},
+  /**
+   * Get Tamara's Support Country
+   * @returns {any} a custom attributes value
+   */
+  getSupportedCountriesAsString: function () {
+    return new dwutil.ArrayList(
+      this.getCustomPreference("tamaraSupportedCountries")
+    ).join(";");
+  },
 
-	/**
-	 * Get Tamara's Payment ID base on SFCC Payment Method
-	 * @param {string} type - Payment method in SFCC
-	 * @returns {string} Tamara Payment ID
-	 */
-	getPaymentTypeID: function (type) {
-		switch (type) {
-			case this.METHOD_TAMARA_INSTALMENTS:
-			case this.METHOD_TAMARA_6_INSTALMENTS:
-				return this.PAY_BY_INSTALMENTS;
-			default:
-				throw new Error('tamaraHelper.getPaymentTypeID() Not found payment type: ' + type);
-		}
-	},
+  /**
+   * Get Tamara's API Endpoint value
+   * @returns {any} a custom attributes value
+   */
+  getAPIEndPoint: function () {
+    return this.getCustomPreference("tamaraEndPoint");
+  },
 
-	getInstallments: function (type) {
-		switch (type) {
-			case this.METHOD_TAMARA_6_INSTALMENTS:
-				return 6;
-			default:
-				return 3;
-		}
-	},
+  /**
+   * Get Priority PDP Widget
+   * @returns {any} a custom attributes value
+   */
+  getPriorityPDPWidget: function () {
+    if (
+      this.getCustomPreference("tamaraPriorityPDPWidgets").value ===
+      this.METHOD_TAMARA_INSTALMENTS
+    ) {
+      return this.METHOD_TAMARA_INSTALMENTS;
+    }
 
-	/**
-	 * Get web service instance base on service name
-	 * @param {string} serviceName - Service name
-	 * @returns {dw.svc.Service|any} Service object or empty object in case no relevant service
-	 */
-	getService: function (serviceName) {
-		const dwsvc = require('dw/svc');
-		// Create the service config (used for all services)
-		var tamaraService = null;
+    if (
+      this.getCustomPreference("tamaraPriorityPDPWidgets").value ===
+      this.METHOD_TAMARA_6_INSTALMENTS
+    ) {
+      return this.METHOD_TAMARA_6_INSTALMENTS;
+    }
+  },
+  /**
+   * Get Priority PDP Widget
+   * @returns {any} a custom attributes value
+   */
+  getPriorityCartWidget: function () {
+    if (
+      this.getCustomPreference("tamaraPriorityCartWidgets").value ===
+      this.METHOD_TAMARA_INSTALMENTS
+    ) {
+      return this.METHOD_TAMARA_INSTALMENTS;
+    }
 
-		try {
-			tamaraService = dwsvc.LocalServiceRegistry.createService(serviceName, {
-				createRequest: function (svc, args) {
-					// svc.setRequestMethod('POST');
-					svc.addHeader('Content-Type', 'application/json');
-					svc.addHeader('Accept', 'application/json');
-					svc.addHeader('Authorization', 'Bearer ' + tamaraHelperObj.getAPIToken());
-					const url = svc.getURL();
-					svc.setURL(tamaraHelperObj.getAPIEndPoint() + url);
-					if (args) {
-						return args;
-					}
-					return null;
-				},
-				parseResponse: function (svc, client) {
-					return JSON.parse(client.text)
-				},
-				filterLogMessage: function (msg) {
-					return msg;
-				},
-			});
-			this.getTamaraLogger().debug(
-				'Successfully retrive service with name {0}',
-				serviceName
-			);
-		} catch (e) {
-			this.getTamaraLogger().error(
-				"Can't get service instance with name {0}. Error: {1}",
-				serviceName,
-				e.message
-			);
-		}
-		return tamaraService;
-	},
+    if (
+      this.getCustomPreference("tamaraPriorityCartWidgets").value ===
+      this.METHOD_TAMARA_6_INSTALMENTS
+    ) {
+      return this.METHOD_TAMARA_6_INSTALMENTS;
+    }
+  },
 
-	/**
-	 * Calculate the Range that Tamara allows to make the payment
-	 * @param {dw.util.Collection} paymentTypes - The list of Payment Types
-	 * Array of (
-	 *  {
-	 *    "name": "STRING",
-	 *    "description": "STRING",
-	 *    "min_limit": {
-	 *      "amount": NUMBER,
-	 *      "currency": "STRING"
-	 *    },
-	 *    "max_limit": {
-	 *      "amount": NUMBER,
-	 *      "currency": "STRING"
-	 *    }
-	 *  }
-	 * )
-	 * @returns {object} an Min/Max Object base on the input
-	 */
-	getSupportedPayments: function () {
-		const currentBasket = require('dw/order/BasketMgr').getCurrentBasket();
-		let isInstalmentValid = false;
-		let is6InstalmentValid = false;
-		const paymentTypes = this.fetchSupportedPayments();
+  /**
+   * Get Widget JS URL
+   * @returns Widget JS URL
+   */
+  getWidgetJSURL: function () {
+    return this.getCustomPreference("tamaraWidgetJSURL");
+  },
 
-		paymentTypes.forEach(object => {
-			let ptype = JSON.parse(object.getCustom()['content']);
+  /**
+   * Get tamara widget public key
+   * @returns {any} a custom attributes value
+   */
+  getTamaraWidgetPublicKey: function () {
+    return preferenceCurrentSite.getCustomPreferenceValue(
+      "tamaraWidgetPublicKey"
+    );
+  },
 
-			if (!ptype.hasOwnProperty('name') || !ptype.hasOwnProperty('max_limit') || !ptype.hasOwnProperty('min_limit')) {
-				throw new Error('Error in tamaraHelper.getAllowPaymentRange() | Message: Tamara API doesn\'t not response the right Min/MAX value: ' + JSON.stringify(paymentTypes));
-			}
+  /**
+   * show pdp payment widget or not
+   * @returns {any} a custom attributes value
+   */
+  showPDPWidget: function () {
+    return preferenceCurrentSite.getCustomPreferenceValue(
+      "tamaraPDPWidgetEnablement"
+    );
+  },
+  /**
+   * show cart payment widget or not
+   * @returns {any} a custom attributes value
+   */
+  showCartWidget: function () {
+    return preferenceCurrentSite.getCustomPreferenceValue(
+      "tamaraCartWidgetEnablement"
+    );
+  },
 
-			if (ptype.name == this.METHOD_TAMARA_INSTALMENTS) {
-				isInstalmentValid = !!currentBasket && currentBasket.totalGrossPrice >= ptype.min_limit.amount && currentBasket.totalGrossPrice <= ptype.max_limit.amount;
-			} else if (ptype.name === this.METHOD_TAMARA_6_INSTALMENTS) {
-				is6InstalmentValid = !!currentBasket && currentBasket.totalGrossPrice >= ptype.min_limit.amount && currentBasket.totalGrossPrice <= ptype.max_limit.amount;
-			}
-		});
+  /**
+   * Get Tamara's APIToken value
+   * @returns {any} a custom attributes value
+   */
+  getAPIToken: function () {
+    return this.getCustomPreference("tamaraAPIToken");
+  },
 
-		return {
-			"isInstalmentValid": isInstalmentValid,
-			"is6InstalmentValid": is6InstalmentValid
-		};
-	},
+  /**
+   * Get Webhoook events supported
+   * @returns {any} a custom attributes value
+   */
+  getWebhookEvents: function () {
+    return this.getCustomPreference("tamaraWebhookEvents");
+  },
 
-	/**
-	 * Get product widget
-	 * @param {object} productPrice
-	 * @return string
-	 */
-	getProductWidget: function (productPrice) {
-		let widget = '';
-		let div = '';
-		let paymentTypes = this.fetchSupportedPayments();
-		let showPDPWidgetWithoutMinLimit = this.showPDPWidgetWithoutMinLimit();
-		let shouldSkip = false;
-		let _this = this;
+  /**
+   * get Total Discount based on the price adjustments
+   * @param {object} price Adjustments
+   * @returns {object} discount amount and discount name
+   */
+  getTotalDiscount: function (priceAdjustments) {
+    var discountIDs = [];
+    var priceAdjustmentsIt = priceAdjustments.iterator();
+    var priceAjustmentAmount = 0;
+    var currencyCode = "";
+    var data = {};
+    while (priceAdjustmentsIt.hasNext()) {
+      var priceAdjustment = priceAdjustmentsIt.next();
+      priceAjustmentAmount += Math.abs(
+        priceAdjustment.getBasePrice().getValue()
+      );
+      discountIDs.push(priceAdjustment.promotionID);
+      currencyCode = priceAdjustment.getBasePrice().currencyCode;
+    }
+    if (priceAjustmentAmount != 0) {
+      data.name = discountIDs.join(";");
+      data.amount = {
+        amount: Math.abs(priceAjustmentAmount).toFixed(2),
+        currency: currencyCode,
+      };
+      return data;
+    } else {
+      return null;
+    }
+  },
 
-		paymentTypes.forEach(function (object) {
-			if (shouldSkip) {
-				return;
-			}
+  /**
+   * Get Tamara's Payment ID base on SFCC Payment Method
+   * @param {string} type - Payment method in SFCC
+   * @returns {string} Tamara Payment ID
+   */
+  getPaymentTypeID: function (type) {
+    switch (type) {
+      case this.METHOD_TAMARA_PAYNOW:
+        return this.PAY_NOW;
+      case this.METHOD_TAMARA_PAY:
+      case this.METHOD_TAMARA_INSTALMENTS:
+      case this.METHOD_TAMARA_6_INSTALMENTS:
+        return this.PAY_BY_INSTALMENTS;
+      default:
+        throw new Error(
+          "tamaraHelper.getPaymentTypeID() Not found payment type: " + type
+        );
+    }
+  },
 
-			let ptype = JSON.parse(object.getCustom()['content']);
-			if ((productPrice.sales.decimalPrice >= ptype.min_limit.amount || showPDPWidgetWithoutMinLimit) && productPrice.sales.decimalPrice <= ptype.max_limit.amount) {
-				if (ptype.name == _this.getPriorityPDPWidget()) {
-					widget = _this.getPriorityPDPWidget();
-					shouldSkip = true;
-				} else {
-					widget = ptype.name;
-				}
-			}
-		});
+  getInstallments: function (type) {
+    switch (type) {
+      case this.METHOD_TAMARA_6_INSTALMENTS:
+        return 6;
+      default:
+        return 3;
+    }
+  },
 
-		if (widget == this.METHOD_TAMARA_INSTALMENTS) {
-			div = '<div class="tamara-product-widget" data-lang="' + tamaraHelperObj.getCurrentLangCode() + '" data-price="' + productPrice.sales.decimalPrice + '" data-currency="' + productPrice.sales.currency + '" data-country-code="'+ this.getSupportedCountriesAsString() + '" data-payment-type="installment" data-disable-installment="false" data-disable-paylater="true"></div>';
-		} else if (widget == this.METHOD_TAMARA_6_INSTALMENTS) {
-			div = '<div class="tamara-product-widget" data-lang="' + tamaraHelperObj.getCurrentLangCode() + '" data-price="' + productPrice.sales.decimalPrice + '" data-currency="' + productPrice.sales.currency + '" data-number-of-installments="6" data-country-code="'+ this.getSupportedCountriesAsString() + '" data-payment-type="installment" data-disable-installment="false" data-disable-paylater="true"></div>';
-		} 
-		return div;
-	},
+  /**
+   * Get web service instance base on service name
+   * @param {string} serviceName - Service name
+   * @returns {dw.svc.Service|any} Service object or empty object in case no relevant service
+   */
+  getService: function (serviceName) {
+    const dwsvc = require("dw/svc");
+    // Create the service config (used for all services)
+    var tamaraService = null;
 
-	/**
-	 * Get checkout widget
-	 * @return string
-	 */
-	getCheckoutWidget: function (numberOfInstallments) {
-		const CustomObjectMgr = require('dw/object/CustomObjectMgr');
-		const currentBasket = require('dw/order/BasketMgr').getCurrentBasket();
-		let installment = null;
+    try {
+      tamaraService = dwsvc.LocalServiceRegistry.createService(serviceName, {
+        createRequest: function (svc, args) {
+          // svc.setRequestMethod('POST');
+          svc.addHeader("Content-Type", "application/json");
+          svc.addHeader("Accept", "application/json");
+          svc.addHeader(
+            "Authorization",
+            "Bearer " + tamaraHelperObj.getAPIToken()
+          );
+          const url = svc.getURL();
+          svc.setURL(tamaraHelperObj.getAPIEndPoint() + url);
+          if (args) {
+            return args;
+          }
+          return null;
+        },
+        parseResponse: function (svc, client) {
+          return JSON.parse(client.text);
+        },
+        filterLogMessage: function (msg) {
+          return msg;
+        },
+      });
+      this.getTamaraLogger().debug(
+        "Successfully retrive service with name {0}",
+        serviceName
+      );
+    } catch (e) {
+      this.getTamaraLogger().error(
+        "Can't get service instance with name {0}. Error: {1}",
+        serviceName,
+        e.message
+      );
+    }
+    return tamaraService;
+  },
 
-		if (numberOfInstallments == 3) {
-			installment = CustomObjectMgr.getCustomObject(tamaraHelperObj.TAMARA_PAYMENTTYPES_OBJECT, this.METHOD_TAMARA_INSTALMENTS);
-		} else if (numberOfInstallments == 6) {
-			installment = CustomObjectMgr.getCustomObject(tamaraHelperObj.TAMARA_PAYMENTTYPES_OBJECT, this.METHOD_TAMARA_6_INSTALMENTS);
-		}
+  /**
+   * Calculate the Range that Tamara allows to make the payment
+   * @param {dw.util.Collection} paymentTypes - The list of Payment Types
+   * Array of (
+   *  {
+   *    "name": "STRING",
+   *    "description": "STRING",
+   *    "min_limit": {
+   *      "amount": NUMBER,
+   *      "currency": "STRING"
+   *    },
+   *    "max_limit": {
+   *      "amount": NUMBER,
+   *      "currency": "STRING"
+   *    }
+   *  }
+   * )
+   * @returns {object} an Min/Max Object base on the input
+   */
+  getSupportedPayments: function () {
+    const currentBasket = require("dw/order/BasketMgr").getCurrentBasket();
+    let isInstalmentValid = false;
+    let is6InstalmentValid = false;
+    const paymentTypes = this.fetchSupportedPayments();
 
-		let widget = '';
+    paymentTypes.forEach((object) => {
+      let ptype = JSON.parse(object.getCustom()["content"]);
 
-		if (installment && currentBasket) {
-			const ptype = JSON.parse(installment.getCustom()['content']);
-			widget = '<div class="tamara-installment-plan-widget" '
-				+ 'data-lang="' + tamaraHelperObj.getCurrentLangCode() + '" '
-				+ 'data-price="' + currentBasket.totalGrossPrice.getValue() + '" '
-				+ 'data-installment-minimum-amount="' + ptype.min_limit.amount + '" '
-				+ 'data-installment-maximum-amount="' + ptype.max_limit.amount + '" '
-				+ 'data-number-of-installments="' + numberOfInstallments + '" '
-				+ 'data-currency="' + currentBasket.currencyCode + '" '
-				+ '></div>';
-		}
+      if (
+        !ptype.hasOwnProperty("name") ||
+        !ptype.hasOwnProperty("max_limit") ||
+        !ptype.hasOwnProperty("min_limit")
+      ) {
+        throw new Error(
+          "Error in tamaraHelper.getAllowPaymentRange() | Message: Tamara API doesn't not response the right Min/MAX value: " +
+            JSON.stringify(paymentTypes)
+        );
+      }
 
-		return widget;
-	},
-	/**
-	 * Authorised the checkout request
-	 * @param {object} req - The current order's number
-	 * @param {dw.order.Order} order - The current order's number
-	 * @param {dw.order.PaymentInstrument} paymentInstrument -  The payment instrument to authorize
-	 * @param {string} source - the source Controller request this function - for tracking purpose
-	 * @return true
-	 */
-	placeOrder: function (req, order, paymentInstrument, source) {
+      if (ptype.name == this.METHOD_TAMARA_INSTALMENTS) {
+        isInstalmentValid =
+          !!currentBasket &&
+          currentBasket.totalGrossPrice >= ptype.min_limit.amount &&
+          currentBasket.totalGrossPrice <= ptype.max_limit.amount;
+      } else if (ptype.name === this.METHOD_TAMARA_6_INSTALMENTS) {
+        is6InstalmentValid =
+          !!currentBasket &&
+          currentBasket.totalGrossPrice >= ptype.min_limit.amount &&
+          currentBasket.totalGrossPrice <= ptype.max_limit.amount;
+      }
+    });
 
-		const Transaction = require('dw/system/Transaction');
-		const tamaraServiceAuthorised = require('*/cartridge/scripts/services/tamaraServiceAuthorised');
-		const COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
-		const Order = require('dw/order/Order');
+    return {
+      isInstalmentValid: isInstalmentValid,
+      is6InstalmentValid: is6InstalmentValid,
+    };
+  },
 
-		// authorised the order if not yet
-		if (order.custom.tamaraPaymentStatus !== 'authorised') {
-			tamaraServiceAuthorised.initService(order, paymentInstrument);
-			Transaction.wrap(function () {
-				order.trackOrderChange(source + ': ' + Resource.msg('note.content.tamara.authorised', 'tamara', null));
-			});
-			tamaraServiceOrderDetail.initService(order, true);
-		}
+  /**
+   * Get allows to make the payment from Tamara
+   * @param {dw.util.Collection} paymentTypes - The list of Payment Types
+   * Array of (
+      {
+      "payment_type": "PAY_NOW",
+      "instalment": 0,
+      "description": "Pay in full using Tamara",
+      "description_ar": "ادفعها على دفعة واحدة باستعمال تمارا"
+      }
+   * )
+   * @returns {object} an Min/Max Object base on the input
+   */
+  getAvailablePayments: function () {
+    var BasketMgr = require("dw/order/BasketMgr");
+    var currentBasket = BasketMgr.getCurrentBasket();
 
-		// Places the order if not placed yet
-		if (Order.ORDER_STATUS_CREATED === order.getStatus().getValue()) {
-			var placeOrderResult = COHelpers.placeOrder(order, {
-				status: true
-			});
-			if (placeOrderResult.error) {
-				throw new Error(
-					'Tamara-Success: Not able to place order: ' + order.orderNo
-				);
-			}
-			Transaction.wrap(function () {
-				order.trackOrderChange(source + ': ' + Resource.msg('note.content.sfcc.placeorder', 'tamara', null));
-			});
+    const paymentTypes = this.fetchAvailablePayments({
+      order_value: {
+        amount: currentBasket.totalGrossPrice.value.toFixed(2),
+        currency: currentBasket.totalGrossPrice.currencyCode,
+      },
+      phone_number:
+        currentBasket.shipments.length &&
+        currentBasket.shipments[0].shippingAddress
+          ? currentBasket.shipments[0].shippingAddress.getPhone()
+          : null,
+      is_vip: true,
+    });
 
-			if (order.getCustomerEmail()) {
-				COHelpers.sendConfirmationEmail(order, req.locale.id);
-			}
+    return paymentTypes;
+  },
 
-			// Reset usingMultiShip after successful Order placement
-			req.session.privacyCache.set('usingMultiShipping', false);
+  /**
+   * Get product widget
+   * @param {object} productPrice
+   * @return string
+   */
+  getProductWidget: function (productPrice) {
+    let div = "";
 
-		}
-		return true;
-	},
+    if (productPrice.type === "range") {
+      return (
+        `<tamara-widget type="tamara-summary" amount="` +
+        productPrice.min.sales.decimalPrice +
+        `" inline-type="2"></tamara-widget>`
+      );
+    }
 
-	/**
-	 * Capture order
-	 * @param {dw.order.Order} order - The current order's number
-	 * @param {string} trackingHistory - The tracking message
-	 * @return true
-	 */
-	captureOrder: function (order, trackingHistory) {
-		const Transaction = require('dw/system/Transaction');
-		if (order.custom.tamaraPaymentStatus !== 'fully_captured') {
-			Transaction.wrap(function () {
-				order.trackOrderChange(trackingHistory);
-			});
-			tamaraServiceOrderDetail.initService(order, true);
-		}
-	},
+    div =
+      `<tamara-widget type="tamara-summary" amount="` +
+      productPrice.sales.decimalPrice +
+      `" inline-type="2"></tamara-widget>`;
 
-	/**
-	 * Refund an order
-	 * @param {dw.order.Order} order - The current order's number
-	 * @param {string} trackingHistory - The tracking message
-	 * @return true
-	 */
-	refundOrder: function (order, trackingHistory) {
-		const Transaction = require('dw/system/Transaction');
-		if (order.custom.tamaraPaymentStatus !== 'fully_refunded') {
-			Transaction.wrap(function () {
-				order.trackOrderChange(trackingHistory);
-			});
-			tamaraServiceOrderDetail.initService(order, true);
-		}
-	},
+    return div;
+  },
 
-	/**
-	 * Refund an order
-	 * @param {dw.order.Order} order - The current order's number
-	 * @param {string} trackingHistory - The tracking message
-	 * @return true
-	 */
-	 cancelOrderTracking: function (order, trackingHistory) {
-		const Transaction = require('dw/system/Transaction');
-		if (order.custom.tamaraPaymentStatus !== 'canceled') {
-			Transaction.wrap(function () {
-				order.trackOrderChange(trackingHistory);
-			});
-			tamaraServiceOrderDetail.initService(order, true);
-		}
-	},
+  /**
+   * Get checkout widget
+   * @return string
+   */
+  getCheckoutWidget: function (numberOfInstallments, isSingleCheckout) {
+    const CustomObjectMgr = require("dw/object/CustomObjectMgr");
+    const currentBasket = require("dw/order/BasketMgr").getCurrentBasket();
+    let installment = null;
 
-	/**
-	 * Set order fail
-	 * @param {dw.order.Order} order - The current order's number
-	 * @param {dw.order.PaymentInstrument} paymentInstrument -  The payment instrument to authorize
-	 * @param {string} source - the source Controller request this function - for tracking purpose
-	 * @return true
-	 */
-	failedOrder: function (order, paymentInstrument, source) {
-		const Transaction = require('dw/system/Transaction');
-		const OrderMgr = require('dw/order/OrderMgr');
-		const Order = require('dw/order/Order');
+    if (isSingleCheckout) {
+      return (
+        `<tamara-widget type="tamara-summary" amount="` +
+        currentBasket.totalGrossPrice.getValue() +
+        `" inline-type="3"></tamara-widget>`
+      );
+    }
 
-		if (['declined', 'expired'].indexOf(order.custom.tamaraPaymentStatus || '') === -1) {
-			Transaction.wrap(function () {
-				if (order.getStatus().getValue() === Order.ORDER_STATUS_CREATED) {
-					OrderMgr.failOrder(order, true);
-					order.custom.tamaraPaymentStatus = 'declined';
-					order.trackOrderChange(source + ': ' + Resource.msg('note.content.sfcc.failorder', 'tamara', null));
-				} else {
-					OrderMgr.cancelOrder(order);
-					order.setPaymentStatus(Order.PAYMENT_STATUS_NOTPAID);
-					order.custom.tamaraPaymentStatus = 'expired';
-					order.trackOrderChange(source + ': ' + Resource.msg('note.content.sfcc.cancelorder', 'tamara', null));
-				}
-			});
+    if (numberOfInstallments == 3) {
+      installment = CustomObjectMgr.getCustomObject(
+        tamaraHelperObj.TAMARA_PAYMENTTYPES_OBJECT,
+        this.METHOD_TAMARA_INSTALMENTS
+      );
+    } else if (numberOfInstallments == 6) {
+      installment = CustomObjectMgr.getCustomObject(
+        tamaraHelperObj.TAMARA_PAYMENTTYPES_OBJECT,
+        this.METHOD_TAMARA_6_INSTALMENTS
+      );
+    }
 
-			tamaraServiceOrderDetail.initService(order, true);
-		}
-	},
+    let widget = "";
 
-	/**
-	 * Cancel an order from Tamara
-	 * @param {dw.order.Order} order - The current order's number
-	 * @param {dw.order.PaymentInstrument} paymentInstrument -  The payment instrument to authorize
-	 * @param {string} source - the source Controller request this function - for tracking purpose
-	 * @return true
-	 */
-	cancelOrder: function (order, paymentInstrument, source) {
-		const Transaction = require('dw/system/Transaction');
-		const OrderMgr = require('dw/order/OrderMgr');
-		const Order = require('dw/order/Order');
+    if (installment && currentBasket) {
+      const ptype = JSON.parse(installment.getCustom()["content"]);
+      widget =
+        '<div class="tamara-installment-plan-widget" ' +
+        'data-lang="' +
+        tamaraHelperObj.getCurrentLangCode() +
+        '" ' +
+        'data-price="' +
+        currentBasket.totalGrossPrice.getValue() +
+        '" ' +
+        'data-installment-minimum-amount="' +
+        ptype.min_limit.amount +
+        '" ' +
+        'data-installment-maximum-amount="' +
+        ptype.max_limit.amount +
+        '" ' +
+        'data-number-of-installments="' +
+        numberOfInstallments +
+        '" ' +
+        'data-currency="' +
+        currentBasket.currencyCode +
+        '" ' +
+        "></div>";
+    }
 
-		if (['canceled'].indexOf(order.custom.tamaraPaymentStatus || '') === -1) {
-			Transaction.wrap(function () {
-				if (order.getStatus().getValue() === Order.ORDER_STATUS_CREATED) {
-					OrderMgr.failOrder(order, true);
-					order.trackOrderChange(source + ': ' + Resource.msg('note.content.sfcc.failorder2', 'tamara', null));
-				} else {
-					OrderMgr.cancelOrder(order);
-					order.setPaymentStatus(Order.PAYMENT_STATUS_NOTPAID);
-					order.trackOrderChange(source + ': ' + Resource.msg('note.content.sfcc.cancelorder', 'tamara', null));
-				}
-			});
+    return widget;
+  },
+  /**
+   * Authorised the checkout request
+   * @param {object} req - The current order's number
+   * @param {dw.order.Order} order - The current order's number
+   * @param {dw.order.PaymentInstrument} paymentInstrument -  The payment instrument to authorize
+   * @param {string} source - the source Controller request this function - for tracking purpose
+   * @return true
+   */
+  placeOrder: function (req, order, source) {
+    const Transaction = require("dw/system/Transaction");
+    const tamaraServiceAuthorised = require("*/cartridge/scripts/services/tamaraServiceAuthorised");
+    const COHelpers = require("*/cartridge/scripts/checkout/checkoutHelpers");
+    const Order = require("dw/order/Order");
 
-			tamaraServiceOrderDetail.initService(order, true);
-		}
-	},
+    this.updateOrderAfterAuthorized(order);
 
-	/**
-	 * Get supported payment types
-	 * @param {string} source - the source Controller request this function - for tracking purpose
-	 * @return object
-	 */
-	fetchSupportedPayments: function () {
-		const CustomObjectMgr = require('dw/object/CustomObjectMgr');
-		const Transaction = require('dw/system/Transaction');
-		const tamaraServicePaymentTypes = require('*/cartridge/scripts/services/tamaraServicePaymentTypes');
+    // authorised the order if not yet
+    if (order.custom.tamaraPaymentStatus !== "authorised") {
+      tamaraServiceAuthorised.initService(order);
+      Transaction.wrap(function () {
+        order.trackOrderChange(
+          source +
+            ": " +
+            Resource.msg("note.content.tamara.authorised", "tamara", null)
+        );
+      });
+      tamaraServiceOrderDetail.initService(order, true);
+    }
 
-		var paymentTypes = CustomObjectMgr.queryCustomObjects(tamaraHelperObj.TAMARA_PAYMENTTYPES_OBJECT, "", "creationDate ASC").asList().toArray();
+    // Places the order if not placed yet
+    if (Order.ORDER_STATUS_CREATED === order.getStatus().getValue()) {
+      var placeOrderResult = COHelpers.placeOrder(order, {
+        status: true,
+      });
+      if (placeOrderResult.error) {
+        throw new Error(
+          "Tamara-Success: Not able to place order: " + order.orderNo
+        );
+      }
+      Transaction.wrap(function () {
+        order.trackOrderChange(
+          source +
+            ": " +
+            Resource.msg("note.content.sfcc.placeorder", "tamara", null)
+        );
+      });
 
-		// Delete the exsting objects of they are created since more than 30 mins before
-		if (paymentTypes.length > 0 && (new Date().getTime() - paymentTypes[0].lastModified.getTime()) / (1000 * 60) >= 30) {
-			Transaction.wrap(() => paymentTypes.forEach((paymentType) => CustomObjectMgr.remove(paymentType)));
-			paymentTypes = [];
-		}
+      if (order.getCustomerEmail()) {
+        COHelpers.sendConfirmationEmail(order, req.locale.id);
+      }
 
-		//If no any existing objects, we fetch the latest object from Tamara API
-		if (paymentTypes.length === 0) {
-			const latestPaymentTypes = tamaraServicePaymentTypes.initService();
-			Transaction.wrap(() => {
-				latestPaymentTypes.forEach(paymentType => {
-					const paymentTypeName = paymentType['name'];
+      // Reset usingMultiShip after successful Order placement
+      req.session.privacyCache.set("usingMultiShipping", false);
+    }
 
-					if ('PAY_BY_INSTALMENTS' === paymentTypeName) {
-						const supportedInstalments = paymentType['supported_instalments'];
-						supportedInstalments.forEach(supportedInstalment => {
-							if (supportedInstalment['instalments'] === 3) {
-								supportedInstalment['name'] = this.METHOD_TAMARA_INSTALMENTS;
-								let type = CustomObjectMgr.createCustomObject(tamaraHelperObj.TAMARA_PAYMENTTYPES_OBJECT, this.METHOD_TAMARA_INSTALMENTS);
-								type.getCustom()['content'] = JSON.stringify(supportedInstalment);
-								paymentTypes.push(type);
-							} else if (supportedInstalment['instalments'] === 6) {
-								supportedInstalment['name'] = this.METHOD_TAMARA_6_INSTALMENTS;
-								let type = CustomObjectMgr.createCustomObject(tamaraHelperObj.TAMARA_PAYMENTTYPES_OBJECT, this.METHOD_TAMARA_6_INSTALMENTS);
-								type.getCustom()['content'] = JSON.stringify(supportedInstalment);
-								paymentTypes.push(type);
-							}
-						});
-					}
-				});
-			});
-		}
+    return true;
+  },
 
+  /**
+   * Update order after authorized
+   * @param {*} order order
+   */
+  updateOrderAfterAuthorized: function (order) {
+    const PaymentManager = require("dw/order/PaymentMgr");
+    const Transaction = require("dw/system/Transaction");
+    const _this = this;
+    var orderDetails = tamaraServiceOrderDetail.initService(order, false);
+    var paymentMethodID;
 
-		return paymentTypes;
-	}
+    if (
+      orderDetails["payment_type"] === this.PAY_BY_INSTALMENTS &&
+      orderDetails["instalments"] === 6
+    ) {
+      paymentMethodID = this.METHOD_PAY_BY_INSTALMENTS;
+    } else if (
+      orderDetails["payment_type"] === this.PAY_BY_INSTALMENTS &&
+      orderDetails["instalments"] === 3
+    ) {
+      paymentMethodID = this.METHOD_PAY_BY_INSTALMENTS;
+    } else if (orderDetails["payment_type"] === this.PAY_NOW) {
+      paymentMethodID = this.METHOD_TAMARA_PAYNOW;
+    } else if (orderDetails["payment_type"] === this.PAY_LATER) {
+      paymentMethodID = this.METHOD_TAMARA_PAYLATER;
+    }
+
+    try {
+      if (paymentMethodID) {
+        Transaction.wrap(function () {
+          collections.forEach(order.getPaymentInstruments(), function (item) {
+            order.removePaymentInstrument(item);
+          });
+
+          var orderPaymentInstrument = order.createPaymentInstrument(
+            paymentMethodID,
+            order.totalGrossPrice
+          );
+
+          if (
+            !PaymentManager.getPaymentMethod(paymentMethodID).paymentProcessor
+          ) {
+            return _this
+              .getTamaraLogger()
+              .error("Can't get payment processor. Need Admin to check soon");
+          }
+
+          var paymentProcessor =
+            PaymentManager.getPaymentMethod(
+              paymentMethodID
+            ).getPaymentProcessor();
+
+          orderPaymentInstrument.paymentTransaction.setTransactionID(
+            order.getOrderNo()
+          );
+          orderPaymentInstrument.paymentTransaction.setPaymentProcessor(
+            paymentProcessor
+          );
+
+          if (orderDetails["payment_type"] === _this.PAY_BY_INSTALMENTS) {
+            orderPaymentInstrument.paymentTransaction.custom.tamaraInstalmentNumber =
+              orderDetails["instalments"].toString();
+          }
+        });
+      }
+    } catch (e) {
+      var a = e;
+      var b = a;
+      _this
+        .getTamaraLogger()
+        .error(
+          "Can't update the order details after Authorized success. Need Admin to check soon"
+        );
+    }
+  },
+
+  /**
+   * Capture order
+   * @param {dw.order.Order} order - The current order's number
+   * @param {string} trackingHistory - The tracking message
+   * @return true
+   */
+  captureOrder: function (order, trackingHistory) {
+    const Transaction = require("dw/system/Transaction");
+    if (order.custom.tamaraPaymentStatus !== "fully_captured") {
+      Transaction.wrap(function () {
+        order.trackOrderChange(trackingHistory);
+      });
+      tamaraServiceOrderDetail.initService(order, true);
+    }
+  },
+
+  /**
+   * Refund an order
+   * @param {dw.order.Order} order - The current order's number
+   * @param {string} trackingHistory - The tracking message
+   * @return true
+   */
+  refundOrder: function (order, trackingHistory) {
+    const Transaction = require("dw/system/Transaction");
+    if (order.custom.tamaraPaymentStatus !== "fully_refunded") {
+      Transaction.wrap(function () {
+        order.trackOrderChange(trackingHistory);
+      });
+      tamaraServiceOrderDetail.initService(order, true);
+    }
+  },
+
+  /**
+   * Refund an order
+   * @param {dw.order.Order} order - The current order's number
+   * @param {string} trackingHistory - The tracking message
+   * @return true
+   */
+  cancelOrderTracking: function (order, trackingHistory) {
+    const Transaction = require("dw/system/Transaction");
+    if (order.custom.tamaraPaymentStatus !== "canceled") {
+      Transaction.wrap(function () {
+        order.trackOrderChange(trackingHistory);
+      });
+      tamaraServiceOrderDetail.initService(order, true);
+    }
+  },
+
+  /**
+   * Set order fail
+   * @param {dw.order.Order} order - The current order's number
+   * @param {dw.order.PaymentInstrument} paymentInstrument -  The payment instrument to authorize
+   * @param {string} source - the source Controller request this function - for tracking purpose
+   * @return true
+   */
+  failedOrder: function (order, paymentInstrument, source) {
+    const Transaction = require("dw/system/Transaction");
+    const OrderMgr = require("dw/order/OrderMgr");
+    const Order = require("dw/order/Order");
+
+    if (
+      ["declined", "expired"].indexOf(
+        order.custom.tamaraPaymentStatus || ""
+      ) === -1
+    ) {
+      Transaction.wrap(function () {
+        if (order.getStatus().getValue() === Order.ORDER_STATUS_CREATED) {
+          OrderMgr.failOrder(order, true);
+          order.custom.tamaraPaymentStatus = "declined";
+          order.trackOrderChange(
+            source +
+              ": " +
+              Resource.msg("note.content.sfcc.failorder", "tamara", null)
+          );
+        } else {
+          OrderMgr.cancelOrder(order);
+          order.setPaymentStatus(Order.PAYMENT_STATUS_NOTPAID);
+          order.custom.tamaraPaymentStatus = "expired";
+          order.trackOrderChange(
+            source +
+              ": " +
+              Resource.msg("note.content.sfcc.cancelorder", "tamara", null)
+          );
+        }
+      });
+
+      tamaraServiceOrderDetail.initService(order, true);
+    }
+  },
+
+  /**
+   * Cancel an order from Tamara
+   * @param {dw.order.Order} order - The current order's number
+   * @param {dw.order.PaymentInstrument} paymentInstrument -  The payment instrument to authorize
+   * @param {string} source - the source Controller request this function - for tracking purpose
+   * @return true
+   */
+  cancelOrder: function (order, paymentInstrument, source) {
+    const Transaction = require("dw/system/Transaction");
+    const OrderMgr = require("dw/order/OrderMgr");
+    const Order = require("dw/order/Order");
+
+    if (["canceled"].indexOf(order.custom.tamaraPaymentStatus || "") === -1) {
+      Transaction.wrap(function () {
+        if (order.getStatus().getValue() === Order.ORDER_STATUS_CREATED) {
+          OrderMgr.failOrder(order, true);
+          order.trackOrderChange(
+            source +
+              ": " +
+              Resource.msg("note.content.sfcc.failorder2", "tamara", null)
+          );
+        } else {
+          OrderMgr.cancelOrder(order);
+          order.setPaymentStatus(Order.PAYMENT_STATUS_NOTPAID);
+          order.trackOrderChange(
+            source +
+              ": " +
+              Resource.msg("note.content.sfcc.cancelorder", "tamara", null)
+          );
+        }
+      });
+
+      tamaraServiceOrderDetail.initService(order, true);
+    }
+  },
+
+  /**
+   * Get supported payment types
+   * @param {string} source - the source Controller request this function - for tracking purpose
+   * @return object
+   */
+  fetchSupportedPayments: function () {
+    const CustomObjectMgr = require("dw/object/CustomObjectMgr");
+    const Transaction = require("dw/system/Transaction");
+    const tamaraServicePaymentTypes = require("*/cartridge/scripts/services/tamaraServicePaymentTypes");
+
+    var paymentTypes = CustomObjectMgr.queryCustomObjects(
+      tamaraHelperObj.TAMARA_PAYMENTTYPES_OBJECT,
+      "",
+      "creationDate ASC"
+    )
+      .asList()
+      .toArray();
+
+    // Delete the exsting objects of they are created since more than 30 mins before
+    if (
+      paymentTypes.length > 0 &&
+      (new Date().getTime() - paymentTypes[0].lastModified.getTime()) /
+        (1000 * 60) >=
+        30
+    ) {
+      Transaction.wrap(() =>
+        paymentTypes.forEach((paymentType) =>
+          CustomObjectMgr.remove(paymentType)
+        )
+      );
+      paymentTypes = [];
+    }
+
+    //If no any existing objects, we fetch the latest object from Tamara API
+    if (paymentTypes.length === 0) {
+      const latestPaymentTypes = tamaraServicePaymentTypes.initService();
+      Transaction.wrap(() => {
+        latestPaymentTypes.forEach((paymentType) => {
+          const paymentTypeName = paymentType["name"];
+
+          if ("PAY_BY_INSTALMENTS" === paymentTypeName) {
+            const supportedInstalments = paymentType["supported_instalments"];
+            supportedInstalments.forEach((supportedInstalment) => {
+              if (supportedInstalment["instalments"] === 3) {
+                supportedInstalment["name"] = this.METHOD_TAMARA_INSTALMENTS;
+                let type = CustomObjectMgr.createCustomObject(
+                  tamaraHelperObj.TAMARA_PAYMENTTYPES_OBJECT,
+                  this.METHOD_TAMARA_INSTALMENTS
+                );
+                type.getCustom()["content"] =
+                  JSON.stringify(supportedInstalment);
+                paymentTypes.push(type);
+              } else if (supportedInstalment["instalments"] === 6) {
+                supportedInstalment["name"] = this.METHOD_TAMARA_6_INSTALMENTS;
+                let type = CustomObjectMgr.createCustomObject(
+                  tamaraHelperObj.TAMARA_PAYMENTTYPES_OBJECT,
+                  this.METHOD_TAMARA_6_INSTALMENTS
+                );
+                type.getCustom()["content"] =
+                  JSON.stringify(supportedInstalment);
+                paymentTypes.push(type);
+              }
+            });
+          }
+        });
+      });
+    }
+
+    return paymentTypes;
+  },
+
+  /**
+   * Get available payment types
+   * @param {string} source - the source Controller request this function - for tracking purpose
+   * @return object
+   */
+  fetchAvailablePayments: function (data) {
+    const CustomObjectMgr = require("dw/object/CustomObjectMgr");
+    const Transaction = require("dw/system/Transaction");
+    const tamaraServicePaymentOptionsAvailable = require("*/cartridge/scripts/services/tamaraServicePaymentOptionsAvailable");
+    var cachePreCheckAPI;
+
+    paymentTypes = {
+      isSingleCheckout: false,
+      isEnableTamaraPay: false,
+      isEnablePaynow: false,
+      isEnableInstalments: false,
+      is6InstalmentsEnabled: false,
+    };
+
+    if (data["phone_number"]) {
+      cachePreCheckAPI = CustomObjectMgr.queryCustomObject(
+        tamaraHelperObj.TAMARA_CACHE_API_OBJECT,
+        "custom.ID = {0}",
+        data["phone_number"]
+      );
+
+      if (
+        cachePreCheckAPI &&
+        (new Date().getTime() - cachePreCheckAPI.lastModified.getTime()) /
+          (1000 * 60) >=
+          5
+      ) {
+        Transaction.wrap(() => {
+          CustomObjectMgr.remove(cachePreCheckAPI);
+        });
+        cachePreCheckAPI = null;
+      }
+    }
+
+    if (!cachePreCheckAPI) {
+      const availablePaymentsResponse =
+        tamaraServicePaymentOptionsAvailable.initService(data);
+
+      paymentTypes.isSingleCheckout =
+        availablePaymentsResponse["single_checkout_enabled"];
+
+      availablePaymentsResponse.available_payment_labels.forEach(
+        (available_payment_label) => {
+          if (available_payment_label["payment_type"] === this.PAY_NOW) {
+            paymentTypes.isEnablePaynow = true;
+            paymentTypes[this.METHOD_TAMARA_PAYNOW] =
+              available_payment_label["description_en"];
+          }
+
+          if (
+            available_payment_label["payment_type"] ===
+              this.PAY_BY_INSTALMENTS &&
+            available_payment_label["instalment"] === 0
+          ) {
+            paymentTypes.isEnableTamaraPay = true;
+            paymentTypes[this.METHOD_PAY_BY_INSTALMENTS] =
+              available_payment_label["description_en"];
+          }
+
+          if (
+            available_payment_label["payment_type"] ===
+              this.PAY_BY_INSTALMENTS &&
+            available_payment_label["instalment"] === 3
+          ) {
+            paymentTypes.isEnableInstalments = true;
+            paymentTypes[this.METHOD_TAMARA_INSTALMENTS] =
+              available_payment_label["description_en"];
+          }
+
+          if (
+            available_payment_label["payment_type"] ===
+              this.PAY_BY_INSTALMENTS &&
+            available_payment_label["instalment"] === 6
+          ) {
+            paymentTypes.is6InstalmentsEnabled = true;
+            paymentTypes[this.METHOD_TAMARA_6_INSTALMENTS] =
+              available_payment_label["description_en"];
+          }
+        }
+      );
+
+      if (data["phone_number"]) {
+        Transaction.wrap(function () {
+          cachePreCheckAPI = CustomObjectMgr.createCustomObject(
+            tamaraHelperObj.TAMARA_CACHE_API_OBJECT,
+            data["phone_number"]
+          );
+
+          cachePreCheckAPI.getCustom()["content"] =
+            JSON.stringify(paymentTypes);
+        });
+      }
+
+      return paymentTypes;
+    }
+
+    return JSON.parse(cachePreCheckAPI.getCustom()["content"]);
+  },
 };
 
 module.exports = tamaraHelperObj;

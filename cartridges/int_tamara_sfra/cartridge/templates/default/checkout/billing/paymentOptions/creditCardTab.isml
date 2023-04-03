@@ -1,0 +1,9 @@
+<li class="nav-item" data-method-id="${paymentOption.ID}">
+    <a class="nav-link credit-card-tab" data-toggle="none" href="#credit-card-content" role="tab">
+        <div class="payment-input-select-custom mr-1">
+            <span class="input-select"></span>
+        </div>
+        <img class="credit-card-option" src="${URLUtils.staticURL('/images/credit.png')}" height="32"
+            alt="${paymentOption.name}" title="${paymentOption.name}">
+    </a>
+</li>

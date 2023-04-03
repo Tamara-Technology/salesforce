@@ -6,10 +6,16 @@
     <isloop items="${pdict.order.billing.payment.selectedPaymentInstruments}" var="payment">
         <isif condition="${payment.paymentMethod === 'CREDIT_CARD'}">
             <isinclude template="checkout/billing/paymentOptions/creditCardSummary" />
+        <iselseif condition="${payment.paymentMethod === tamaraHelper.METHOD_TAMARA_PAYLATER}" />
+            ${Resource.msg('msg.payment.type.paylater', 'tamara', null)}
+        <iselseif condition="${payment.paymentMethod === tamaraHelper.METHOD_TAMARA_PAYNOW}" />
+            ${Resource.msg('msg.payment.type.paynow', 'tamara', null)}
+        <iselseif condition="${payment.paymentMethod === tamaraHelper.METHOD_PAY_BY_INSTALMENTS}" />
+            ${Resource.msgf('msg.payment.type.paybyinstalmentsX', 'tamara', null, payment.instalment || 'X')}
         <iselseif condition="${payment.paymentMethod === tamaraHelper.METHOD_TAMARA_INSTALMENTS}" />
-            <isinclude template="checkout/billing/paymentOptions/tamaraInstalmentsSummary" />
+            ${Resource.msg('msg.payment.type.paybyinstalments', 'tamara', null)}
         <iselseif condition="${payment.paymentMethod === tamaraHelper.METHOD_TAMARA_6_INSTALMENTS}" />
-            <isinclude template="checkout/billing/paymentOptions/tamaraInstalmentsSummary" />
+            ${Resource.msg('msg.payment.type.paybyinstalments', 'tamara', null)}
         </isif>
     </isloop>
 </div>

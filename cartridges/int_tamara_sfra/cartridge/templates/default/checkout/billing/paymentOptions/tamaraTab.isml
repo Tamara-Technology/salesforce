@@ -1,10 +1,14 @@
+<isscript>
+    var tamaraHelper = require('*/cartridge/scripts/util/tamaraHelper');
+</isscript>
+
 <li class="nav-item tamara-tab-wrapper" data-method-id="${paymentOption.ID}">
-    <a class="nav-link tamara-tab" data-toggle="tab" href="${'#' + paymentOption.ID}-content" role="tab">
-        <img class="tamara-option"
-                src="${paymentOption.image.getURL()}"
-                height="22"
-                alt="${paymentOption.name}"
-                title="${paymentOption.name}"
-        > <span style="color: #6dc8bf;">${paymentOption.name}</span>
+    <a class="nav-link tamara-tab collapsed" data-toggle="collapse" href="${'#' + paymentOption.ID}-content" role="tab">
+        <div class="payment-input-select-custom mr-1">
+            <span class="input-select"></span>
+        </div>
+        <img class="tamara-option mr-1" src="${URLUtils.staticURL('/images/tamaraLogo.svg')}" height="22"
+            alt="${paymentOption.name}" title="${paymentOption.name}"><span class="payment-desc"
+            style="color: #000;">${pdict.tamara[paymentOption.ID] || paymentOption.name}</span>
     </a>
 </li>

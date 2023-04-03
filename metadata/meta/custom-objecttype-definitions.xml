@@ -22,12 +22,40 @@
         <group-definitions>
             <attribute-group group-id="PaymentTypes">
                 <display-name xml:lang="x-default">PaymentTypes</display-name>
-                <attribute attribute-id="ID"/>
-                <attribute attribute-id="content"/>
-                <attribute attribute-id="creationDate" system="true"/>
-                <attribute attribute-id="lastModified" system="true"/>
+                <attribute attribute-id="ID" />
+                <attribute attribute-id="content" />
+                <attribute attribute-id="creationDate" system="true" />
+                <attribute attribute-id="lastModified" system="true" />
             </attribute-group>
         </group-definitions>
     </custom-type>
-
+    <custom-type type-id="TamaraCachePaymentOptionsPreCheckAPI">
+        <display-name xml:lang="x-default">TamaraCachePaymentOptionsPreCheckAPI</display-name>
+        <description xml:lang="x-default">Tamara Cache Payment Options Pre Check API</description>
+        <staging-mode>no-staging</staging-mode>
+        <storage-scope>site</storage-scope>
+        <key-definition attribute-id="ID">
+            <type>string</type>
+            <min-length>0</min-length>
+        </key-definition>
+        <attribute-definitions>
+            <attribute-definition attribute-id="content">
+                <display-name xml:lang="x-default">CacheContent</display-name>
+                <description xml:lang="x-default">Cache content</description>
+                <type>text</type>
+                <localizable-flag>false</localizable-flag>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+            </attribute-definition>
+        </attribute-definitions>
+        <group-definitions>
+            <attribute-group group-id="CacheInformation">
+                <display-name xml:lang="x-default">CacheInformation</display-name>
+                <attribute attribute-id="ID" />
+                <attribute attribute-id="content" />
+                <attribute attribute-id="creationDate" system="true" />
+                <attribute attribute-id="lastModified" system="true" />
+            </attribute-group>
+        </group-definitions>
+    </custom-type>
 </metadata>

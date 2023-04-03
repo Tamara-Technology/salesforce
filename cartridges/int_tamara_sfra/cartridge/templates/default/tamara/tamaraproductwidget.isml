@@ -1,33 +1,30 @@
 <iscomment>
-TamaraBlock - Display the Tamara Tooltip on PDP
-The tooltip will not display if:
-1. It is product set
-2. The product has a tier of prices
-3. The product has a range of prices
-Merchant can update your logic in the condition below.
+    TamaraBlock - Display the Tamara Tooltip on PDP
+    The tooltip will not display if:
+    1. It is product set
+    2. The product has a tier of prices
+    3. The product has a range of prices
+    Merchant can update your logic in the condition below.
 </iscomment>
 <isset name="price" value="${pdict.product.price}" scope="page" />
 <isscript>
     var tamaraHelper = require('*/cartridge/scripts/util/tamaraHelper');
     var showPDPWidget = tamaraHelper.showPDPWidget();
     var widget = tamaraHelper.getProductWidget(price);
+    var tamaraWidgetPublicKey = tamaraHelper.getTamaraWidgetPublicKey();
 </isscript>
-<isif condition="${showPDPWidget && pdict.product.productType !== 'set' && !price.type && price.sales}">
+<isif condition="${showPDPWidget}">
     <isif condition="${widget}">
         <div class="col-sm-12">
             <isprint value="${widget}" encoding="off" />
         </div>
-        <script charset="utf-8" src="https://cdn.tamara.co/widget/product-widget.min.js"></script>
+        <script defer type="text/javascript" src="${tamaraHelper.getWidgetJSURL()}"></script>
         <script>
-            var timer = setTimeout(() => {
-                if (window.TamaraProductWidget) {
-                    window.TamaraProductWidget.init({ 
-                        lang: '${tamaraHelper.getCurrentLangCode()}'
-                    })
-                    window.TamaraProductWidget.render()
-                    clearTimeout(timer);
-                }
-            }, 500)
+            window.tamaraWidgetConfig = {
+                lang: "${tamaraHelper.getCurrentLangCode()}",
+                country: "${tamaraHelper.getCurrentCountryCode()}",
+                publicKey: "${tamaraWidgetPublicKey}"
+            }
         </script>
     </isif>
 </isif>

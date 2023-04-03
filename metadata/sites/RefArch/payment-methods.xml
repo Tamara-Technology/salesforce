@@ -1,5 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <payment-settings xmlns="http://www.demandware.com/xml/impex/paymentsettings/2009-09-15">
+    <payment-method method-id="PAY_BY_INSTALMENTS">
+        <name xml:lang="x-default">PAY_BY_INSTALMENTS</name>
+        <image>tamara-icon.png</image>
+        <enabled-flag>true</enabled-flag>
+        <processor-id>TAMARA</processor-id>
+    </payment-method>
+
+    <payment-method method-id="TAMARA_PAY">
+        <name xml:lang="x-default">Pay with Tamara</name>
+        <image>tamara-icon.png</image>
+        <enabled-flag>true</enabled-flag>
+        <processor-id>TAMARA</processor-id>
+    </payment-method>
 
     <payment-method method-id="TAMARA_PAYLATER">
         <name xml:lang="x-default">Paylater</name>
@@ -8,15 +21,22 @@
         <processor-id>TAMARA</processor-id>
     </payment-method>
 
+    <payment-method method-id="TAMARA_PAYNOW">
+        <name xml:lang="x-default">Pay in full using Tamara</name>
+        <image>tamara-icon.png</image>
+        <enabled-flag>true</enabled-flag>
+        <processor-id>TAMARA</processor-id>
+    </payment-method>
+
     <payment-method method-id="TAMARA_3_INSTALMENTS">
-        <name xml:lang="x-default">3 Installments</name>
+        <name xml:lang="x-default">Split in 3 payments without interest or hidden fees</name>
         <image>tamara-icon.png</image>
         <enabled-flag>true</enabled-flag>
         <processor-id>TAMARA</processor-id>
     </payment-method>
 
     <payment-method method-id="TAMARA_6_INSTALMENTS">
-        <name xml:lang="x-default">6 Installments</name>
+        <name xml:lang="x-default">Split in 6 payments without interest or hidden fees</name>
         <image>tamara-icon.png</image>
         <enabled-flag>true</enabled-flag>
         <processor-id>TAMARA</processor-id>
