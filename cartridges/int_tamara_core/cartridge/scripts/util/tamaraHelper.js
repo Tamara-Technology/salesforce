@@ -925,12 +925,14 @@ var tamaraHelperObj = {
       paymentTypes.isSingleCheckout =
         availablePaymentsResponse["single_checkout_enabled"];
 
+      const langDesc = tamaraHelperObj.getCurrentLangCode() === 'ar' ? 'description_ar' : 'description_en';
+
       availablePaymentsResponse.available_payment_labels.forEach(
         (available_payment_label) => {
           if (available_payment_label["payment_type"] === this.PAY_NOW) {
             paymentTypes.isEnablePaynow = true;
             paymentTypes[this.METHOD_TAMARA_PAYNOW] =
-              available_payment_label["description_en"];
+              available_payment_label[langDesc];
           }
 
           if (
@@ -939,8 +941,8 @@ var tamaraHelperObj = {
             available_payment_label["instalment"] === 0
           ) {
             paymentTypes.isEnableTamaraPay = true;
-            paymentTypes[this.METHOD_PAY_BY_INSTALMENTS] =
-              available_payment_label["description_en"];
+            paymentTypes[this.METHOD_TAMARA_PAY] =
+              available_payment_label[langDesc];
           }
 
           if (
@@ -950,7 +952,7 @@ var tamaraHelperObj = {
           ) {
             paymentTypes.isEnableInstalments = true;
             paymentTypes[this.METHOD_TAMARA_INSTALMENTS] =
-              available_payment_label["description_en"];
+              available_payment_label[langDesc];
           }
 
           if (
@@ -960,7 +962,7 @@ var tamaraHelperObj = {
           ) {
             paymentTypes.is6InstalmentsEnabled = true;
             paymentTypes[this.METHOD_TAMARA_6_INSTALMENTS] =
-              available_payment_label["description_en"];
+              available_payment_label[langDesc];
           }
         }
       );

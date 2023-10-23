@@ -1,6 +1,11 @@
 var Resource = require("dw/web/Resource");
 var URLUtils = require("dw/web/URLUtils");
 var Transaction = require("dw/system/Transaction");
+var StringUtils = require("dw/util/StringUtils");
+var Calendar = require("dw/util/Calendar");
+var OrderMgr = require("dw/order/OrderMgr");
+var Order = require("dw/order/Order");
+var collections = require("*/cartridge/scripts/util/collections");
 var tamaraHelper = require("*/cartridge/scripts/util/tamaraHelper");
 
 /* eslint no-var: off */
@@ -95,6 +100,72 @@ var tamaraServiceCheckout = {
       items.push(lineItem);
     }
 
+    var risk_assessment = {
+      account_creation_date: null,
+      is_card_on_file: false,
+      has_delivered_order: false,
+      total_order_count: 0,
+      date_of_first_transaction: null,
+      is_existing_customer: false,
+      order_amount_last3months: 0,
+      order_count_last3months: 0,
+    };
+
+    if (customer) {
+      var account_creation_date = StringUtils.formatCalendar(new Calendar(customer.creationDate), "dd-MM-yyyy");
+      var is_card_on_file = customer.wallet && customer.wallet.paymentInstruments && customer.wallet.paymentInstruments.length > 0;
+      var has_delivered_order = false;
+      var total_order_count = 0;
+      var date_of_first_transaction = null;
+      var order_amount_last3months = 0;
+      var order_count_last3months = 0;
+
+      // Check if user has delivered order
+      var customerOrders = OrderMgr.searchOrders(
+        "customerNo={0} AND status={1}",
+        "creationDate asc",
+        customer.customerNo,
+        Order.ORDER_STATUS_COMPLETED
+      );
+
+      if (customerOrders && customerOrders.count > 0) {
+        has_delivered_order = true;
+
+        while (customerOrders.hasNext()) {
+          var customerOrder = customerOrders.next();
+
+          if (!date_of_first_transaction) {
+            date_of_first_transaction = StringUtils.formatCalendar(new Calendar(customerOrder.creationDate), "dd-MM-yyyy");
+          }
+
+          if (customerOrder.paymentInstrument && customerOrder.paymentInstrument.paymentTransaction && customerOrder.paymentInstrument.paymentTransaction.paymentProcessor && customerOrder.paymentInstrument.paymentTransaction.paymentProcessor.ID !== "TAMARA") {
+            total_order_count++;
+
+            var currentDate = new Date();
+            var currentDateSubtract3months = currentDate.setMonth(currentDate.getMonth() - 3);
+  
+            if (new Calendar(customerOrder.creationDate).after(new Calendar(new Date(currentDateSubtract3months)))) {
+              order_amount_last3months += customerOrder.totalGrossPrice.value;
+              order_count_last3months++;
+            }
+          }
+        }
+      }
+
+      var is_existing_customer = new Calendar(customer.creationDate).isSameDay(new Calendar());
+
+      risk_assessment = {
+        account_creation_date: account_creation_date,
+        is_card_on_file: is_card_on_file,
+        has_delivered_order: has_delivered_order,
+        total_order_count: total_order_count,
+        date_of_first_transaction: date_of_first_transaction,
+        is_existing_customer: is_existing_customer,
+        order_amount_last3months: order_amount_last3months,
+        order_count_last3months: order_count_last3months,
+      };
+    }
+
     return {
       order_reference_id: orderNumber,
       total_amount: {
@@ -173,10 +244,8 @@ var tamaraServiceCheckout = {
         ).toString(),
       },
       platform: "SalesforceB2C",
+      risk_assessment: risk_assessment,
       // "is_mobile": false,
-      // "risk_assessment": {
-      //     "has_cod_failed": true
-      // }
     };
   },
 

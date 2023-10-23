@@ -1,0 +1,14 @@
+<isscript>
+    var tamaraHelper = require('*/cartridge/scripts/util/tamaraHelper');
+</isscript>
+
+<script>
+    window.tamaraWidgetConfig = {
+        lang: "${tamaraHelper.getCurrentLangCode()}",
+        country: "${tamaraHelper.getCurrentCountryCode()}",
+    }
+</script>
+
+<script defer type="text/javascript" src="${tamaraHelper.getWidgetJSURL()}"></script>
+
+<tamara-widget type="tamara-card-snippet"></tamara-widget>

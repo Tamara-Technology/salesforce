@@ -6,8 +6,6 @@ const billing = require("./billing");
 module.exports = {
   updateCheckoutView: function () {
     $("body").on("checkout:updateCheckoutView", function (e, data) {
-      console.log(`checkout:updateCheckoutView: int_tamara_sfra: `, data);
-
       shippingHelpers.methods.updateMultiShipInformation(data.order);
       summaryHelpers.updateTotals(data.order.totals);
       data.order.shipping.forEach(function (shipping) {

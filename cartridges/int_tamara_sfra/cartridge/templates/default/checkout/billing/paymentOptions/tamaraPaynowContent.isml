@@ -11,4 +11,5 @@
         <input type="hidden" class="form-control" name="${pdict.forms.billingForm.paymentMethod.htmlName}"
             value="${tamaraHelper.METHOD_TAMARA_PAYNOW}">
     </fieldset>
+    <isinclude template="/tamara/tamaraCheckoutWidget" sf-toolkit="off" />
 </div>
