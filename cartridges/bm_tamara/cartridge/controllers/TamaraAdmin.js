@@ -35,7 +35,7 @@ server.use('Orders', function (req, res, next) {
         var currentPage = request.httpParameterMap.page.intValue ? request.httpParameterMap.page.intValue : 1;
         pageSize = pageSize === 0 ? orders.getCount() : pageSize;
         var start = pageSize * (currentPage - 1);
-        var orderPagingModel = new PagingModel(orders.asList());
+        var orderPagingModel = new PagingModel(orders, orders.getCount());
 
         orderPagingModel.setPageSize(pageSize);
         orderPagingModel.setStart(start);
