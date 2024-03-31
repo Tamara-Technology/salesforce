@@ -11,11 +11,7 @@
         <iselseif condition="${payment.paymentMethod === tamaraHelper.METHOD_TAMARA_PAYNOW}" />
             ${Resource.msg('msg.payment.type.paynow', 'tamara', null)}
         <iselseif condition="${payment.paymentMethod === tamaraHelper.METHOD_PAY_BY_INSTALMENTS}" />
-            ${Resource.msgf('msg.payment.type.paybyinstalmentsX', 'tamara', null, payment.instalment || 'X')}
-        <iselseif condition="${payment.paymentMethod === tamaraHelper.METHOD_TAMARA_INSTALMENTS}" />
-            ${Resource.msg('msg.payment.type.paybyinstalments', 'tamara', null)}
-        <iselseif condition="${payment.paymentMethod === tamaraHelper.METHOD_TAMARA_6_INSTALMENTS}" />
-            ${Resource.msg('msg.payment.type.paybyinstalments', 'tamara', null)}
+            ${Resource.msgf('msg.payment.type.paybyinstalmentsX', 'tamara', null, payment.instalment)}
         </isif>
     </isloop>
 </div>

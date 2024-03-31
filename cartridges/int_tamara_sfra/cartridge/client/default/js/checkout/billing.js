@@ -1,6 +1,5 @@
 constants = {
-  TAMARA_3_INSTALMENTS: "TAMARA_3_INSTALMENTS",
-  TAMARA_6_INSTALMENTS: "TAMARA_6_INSTALMENTS",
+  PAY_BY_INSTALMENTS: "PAY_BY_INSTALMENTS",
   PAY_NOW: "PAY_NOW",
   TAMARA_PAY: "TAMARA_PAY",
 };
@@ -47,7 +46,7 @@ function updatePaymentInformation(order) {
         order.billing.payment.selectedPaymentInstruments[0].expirationYear +
         "</span></div>";
     } else if (
-      [constants.TAMARA_3_INSTALMENTS, constants.TAMARA_6_INSTALMENTS].indexOf(
+      [constants.PAY_BY_INSTALMENTS].indexOf(
         order.billing.payment.selectedPaymentInstruments[0].paymentMethod
       ) !== -1
     ) {
@@ -73,8 +72,6 @@ function updatePaymentInformation(order) {
 function displayTamaraPayment(paymentType) {
   if ($(`li[data-method-id="${paymentType}"]`).length) {
     $(`li[data-method-id="${paymentType}"]`).css("display", "block");
-  } else {
-    updateCheckoutURL("payment");
   }
 }
 
@@ -101,22 +98,15 @@ function updateTamaraPayment(order) {
     }
 
     if (order.tamara.isEnableInstalments) {
-      displayTamaraPayment(constants.TAMARA_3_INSTALMENTS);
+      displayTamaraPayment(constants.PAY_BY_INSTALMENTS);
     } else {
-      hideTamaraPayment(constants.TAMARA_3_INSTALMENTS);
-    }
-
-    if (order.tamara.is6InstalmentsEnabled) {
-      displayTamaraPayment(constants.TAMARA_6_INSTALMENTS);
-    } else {
-      hideTamaraPayment(constants.TAMARA_6_INSTALMENTS);
+      hideTamaraPayment(constants.PAY_BY_INSTALMENTS);
     }
   } else {
     [
       constants.TAMARA_PAY,
       constants.PAY_NOW,
-      constants.TAMARA_3_INSTALMENTS,
-      constants.TAMARA_6_INSTALMENTS,
+      constants.PAY_BY_INSTALMENTS,
     ].forEach(function (paymentType) {
       hideTamaraPayment(paymentType);
     });

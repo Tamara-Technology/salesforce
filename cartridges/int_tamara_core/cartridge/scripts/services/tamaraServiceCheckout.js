@@ -184,9 +184,7 @@ var tamaraServiceCheckout = {
       payment_type: tamaraHelper.getPaymentTypeID(
         paymentInstrument.getPaymentMethod()
       ),
-      instalments: tamaraHelper.getInstallments(
-        paymentInstrument.getPaymentMethod()
-      ),
+      instalments: paymentInstrument.paymentTransaction.custom.tamaraInstalmentNumber,
       locale: request.getLocale(),
       items: items,
       consumer: {

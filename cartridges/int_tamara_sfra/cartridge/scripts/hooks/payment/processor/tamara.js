@@ -27,8 +27,7 @@ function Handle(basket, paymentInformation, paymentMethodID, req) {
     [
       tamaraHelper.METHOD_TAMARA_PAY,
       tamaraHelper.METHOD_TAMARA_PAYNOW,
-      tamaraHelper.METHOD_TAMARA_INSTALMENTS,
-      tamaraHelper.METHOD_TAMARA_6_INSTALMENTS,
+      tamaraHelper.METHOD_PAY_BY_INSTALMENTS,
     ].indexOf(paymentMethodID) === -1
   ) {
     tamaraHelper
@@ -49,6 +48,8 @@ function Handle(basket, paymentInformation, paymentMethodID, req) {
     });
 
     basket.createPaymentInstrument(paymentMethodID, basket.totalGrossPrice);
+
+    basket.paymentInstrument.paymentTransaction.custom.tamaraInstalmentNumber = paymentInformation.instalments;
   });
 
   return { serverErrors: serverErrors, error: false };

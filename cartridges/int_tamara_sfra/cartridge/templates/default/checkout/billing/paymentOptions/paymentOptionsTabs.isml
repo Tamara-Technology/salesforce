@@ -33,18 +33,15 @@
         <div class="container">
             <isinclude template="checkout/billing/paymentOptions/tamaraPaynowContent" />
         </div>
-    <iselseif condition="${paymentOption.ID === tamaraHelper.METHOD_TAMARA_INSTALMENTS && tamaraHelper.getEnablementStatus() && pdict.tamara
+    <iselseif condition="${paymentOption.ID === tamaraHelper.METHOD_PAY_BY_INSTALMENTS && tamaraHelper.getEnablementStatus() && pdict.tamara
                              .isEnableInstalments}" />
-        <isinclude template="checkout/billing/paymentOptions/tamaraTab" />
-        <div class="container">
-            <isinclude template="checkout/billing/paymentOptions/tamaraInstalmentsContent" />
-        </div>
-    <iselseif condition="${paymentOption.ID === tamaraHelper.METHOD_TAMARA_6_INSTALMENTS && tamaraHelper.getEnablementStatus() && pdict.tamara
-                             .is6InstalmentsEnabled}" />
-        <isinclude template="checkout/billing/paymentOptions/tamaraTab" />
-        <div class="container">
-            <isinclude template="checkout/billing/paymentOptions/tamara6InstalmentsContent" />
-        </div>
+        <isloop items="${pdict.tamara.payByInstalmentOptions}" var="payByInstalmentOption" status="loopstatus">
+            <isset name="tamaraInstalmentOptionID" value="${paymentOption.ID + '-' + payByInstalmentOption.instalments}" scope="page" />
+            <isinclude template="checkout/billing/paymentOptions/tamaraInstalmentTab" />
+            <div class="container">
+                <isinclude template="checkout/billing/paymentOptions/tamaraInstalmentsContent" />
+            </div>
+        </isloop>
     </isif>
 </isloop>
 

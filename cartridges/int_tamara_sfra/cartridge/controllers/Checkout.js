@@ -14,7 +14,6 @@ server.prepend("Begin", function (req, res, next) {
 
   if (tamaraHelper.getEnablementStatus()) {
     try {
-      tamaraHelper.getSupportedPayments();
       const tamaraAvailablePayment = tamaraHelper.getAvailablePayments();
       viewData.tamara = tamaraAvailablePayment;
     } catch (e) {

@@ -21,10 +21,6 @@ var tamaraHelperObj = {
 
   METHOD_PAY_BY_INSTALMENTS: "PAY_BY_INSTALMENTS",
 
-  METHOD_TAMARA_INSTALMENTS: "TAMARA_3_INSTALMENTS",
-
-  METHOD_TAMARA_6_INSTALMENTS: "TAMARA_6_INSTALMENTS",
-
   PAY_NOW: "PAY_NOW",
 
   PAY_LATER: "PAY_NEXT_MONTH",
@@ -32,8 +28,6 @@ var tamaraHelperObj = {
   PAY_BY_INSTALMENTS: "PAY_BY_INSTALMENTS",
 
   METHOD_CREDIT_CARD: "CREDIT_CARD",
-
-  TAMARA_PAYMENTTYPES_OBJECT: "TamaraPaymentTypes",
 
   TAMARA_CACHE_API_OBJECT: "TamaraCachePaymentOptionsPreCheckAPI",
 
@@ -176,45 +170,6 @@ var tamaraHelperObj = {
   },
 
   /**
-   * Get Priority PDP Widget
-   * @returns {any} a custom attributes value
-   */
-  getPriorityPDPWidget: function () {
-    if (
-      this.getCustomPreference("tamaraPriorityPDPWidgets").value ===
-      this.METHOD_TAMARA_INSTALMENTS
-    ) {
-      return this.METHOD_TAMARA_INSTALMENTS;
-    }
-
-    if (
-      this.getCustomPreference("tamaraPriorityPDPWidgets").value ===
-      this.METHOD_TAMARA_6_INSTALMENTS
-    ) {
-      return this.METHOD_TAMARA_6_INSTALMENTS;
-    }
-  },
-  /**
-   * Get Priority PDP Widget
-   * @returns {any} a custom attributes value
-   */
-  getPriorityCartWidget: function () {
-    if (
-      this.getCustomPreference("tamaraPriorityCartWidgets").value ===
-      this.METHOD_TAMARA_INSTALMENTS
-    ) {
-      return this.METHOD_TAMARA_INSTALMENTS;
-    }
-
-    if (
-      this.getCustomPreference("tamaraPriorityCartWidgets").value ===
-      this.METHOD_TAMARA_6_INSTALMENTS
-    ) {
-      return this.METHOD_TAMARA_6_INSTALMENTS;
-    }
-  },
-
-  /**
    * Get Widget JS URL
    * @returns Widget JS URL
    */
@@ -308,22 +263,12 @@ var tamaraHelperObj = {
       case this.METHOD_TAMARA_PAYNOW:
         return this.PAY_NOW;
       case this.METHOD_TAMARA_PAY:
-      case this.METHOD_TAMARA_INSTALMENTS:
-      case this.METHOD_TAMARA_6_INSTALMENTS:
+      case this.METHOD_PAY_BY_INSTALMENTS:
         return this.PAY_BY_INSTALMENTS;
       default:
         throw new Error(
           "tamaraHelper.getPaymentTypeID() Not found payment type: " + type
         );
-    }
-  },
-
-  getInstallments: function (type) {
-    switch (type) {
-      case this.METHOD_TAMARA_6_INSTALMENTS:
-        return 6;
-      default:
-        return 3;
     }
   },
 
@@ -373,64 +318,6 @@ var tamaraHelperObj = {
       );
     }
     return tamaraService;
-  },
-
-  /**
-   * Calculate the Range that Tamara allows to make the payment
-   * @param {dw.util.Collection} paymentTypes - The list of Payment Types
-   * Array of (
-   *  {
-   *    "name": "STRING",
-   *    "description": "STRING",
-   *    "min_limit": {
-   *      "amount": NUMBER,
-   *      "currency": "STRING"
-   *    },
-   *    "max_limit": {
-   *      "amount": NUMBER,
-   *      "currency": "STRING"
-   *    }
-   *  }
-   * )
-   * @returns {object} an Min/Max Object base on the input
-   */
-  getSupportedPayments: function () {
-    const currentBasket = require("dw/order/BasketMgr").getCurrentBasket();
-    let isInstalmentValid = false;
-    let is6InstalmentValid = false;
-    const paymentTypes = this.fetchSupportedPayments();
-
-    paymentTypes.forEach((object) => {
-      let ptype = JSON.parse(object.getCustom()["content"]);
-
-      if (
-        !ptype.hasOwnProperty("name") ||
-        !ptype.hasOwnProperty("max_limit") ||
-        !ptype.hasOwnProperty("min_limit")
-      ) {
-        throw new Error(
-          "Error in tamaraHelper.getAllowPaymentRange() | Message: Tamara API doesn't not response the right Min/MAX value: " +
-            JSON.stringify(paymentTypes)
-        );
-      }
-
-      if (ptype.name == this.METHOD_TAMARA_INSTALMENTS) {
-        isInstalmentValid =
-          !!currentBasket &&
-          currentBasket.totalGrossPrice >= ptype.min_limit.amount &&
-          currentBasket.totalGrossPrice <= ptype.max_limit.amount;
-      } else if (ptype.name === this.METHOD_TAMARA_6_INSTALMENTS) {
-        is6InstalmentValid =
-          !!currentBasket &&
-          currentBasket.totalGrossPrice >= ptype.min_limit.amount &&
-          currentBasket.totalGrossPrice <= ptype.max_limit.amount;
-      }
-    });
-
-    return {
-      isInstalmentValid: isInstalmentValid,
-      is6InstalmentValid: is6InstalmentValid,
-    };
   },
 
   /**
@@ -497,7 +384,6 @@ var tamaraHelperObj = {
   getCheckoutWidget: function (numberOfInstallments, isSingleCheckout) {
     const CustomObjectMgr = require("dw/object/CustomObjectMgr");
     const currentBasket = require("dw/order/BasketMgr").getCurrentBasket();
-    let installment = null;
 
     if (isSingleCheckout) {
       return (
@@ -507,22 +393,9 @@ var tamaraHelperObj = {
       );
     }
 
-    if (numberOfInstallments == 3) {
-      installment = CustomObjectMgr.getCustomObject(
-        tamaraHelperObj.TAMARA_PAYMENTTYPES_OBJECT,
-        this.METHOD_TAMARA_INSTALMENTS
-      );
-    } else if (numberOfInstallments == 6) {
-      installment = CustomObjectMgr.getCustomObject(
-        tamaraHelperObj.TAMARA_PAYMENTTYPES_OBJECT,
-        this.METHOD_TAMARA_6_INSTALMENTS
-      );
-    }
-
     let widget = "";
 
-    if (installment && currentBasket) {
-      const ptype = JSON.parse(installment.getCustom()["content"]);
+    if (currentBasket) {
       widget =
         '<div class="tamara-installment-plan-widget" ' +
         'data-lang="' +
@@ -530,12 +403,6 @@ var tamaraHelperObj = {
         '" ' +
         'data-price="' +
         currentBasket.totalGrossPrice.getValue() +
-        '" ' +
-        'data-installment-minimum-amount="' +
-        ptype.min_limit.amount +
-        '" ' +
-        'data-installment-maximum-amount="' +
-        ptype.max_limit.amount +
         '" ' +
         'data-number-of-installments="' +
         numberOfInstallments +
@@ -561,8 +428,6 @@ var tamaraHelperObj = {
     const tamaraServiceAuthorised = require("*/cartridge/scripts/services/tamaraServiceAuthorised");
     const COHelpers = require("*/cartridge/scripts/checkout/checkoutHelpers");
     const Order = require("dw/order/Order");
-
-    this.updateOrderAfterAuthorized(order);
 
     // authorised the order if not yet
     if (order.custom.tamaraPaymentStatus !== "authorised") {
@@ -604,82 +469,6 @@ var tamaraHelperObj = {
     }
 
     return true;
-  },
-
-  /**
-   * Update order after authorized
-   * @param {*} order order
-   */
-  updateOrderAfterAuthorized: function (order) {
-    const PaymentManager = require("dw/order/PaymentMgr");
-    const Transaction = require("dw/system/Transaction");
-    const _this = this;
-    var orderDetails = tamaraServiceOrderDetail.initService(order, false);
-    var paymentMethodID;
-
-    if (
-      orderDetails["payment_type"] === this.PAY_BY_INSTALMENTS &&
-      orderDetails["instalments"] === 6
-    ) {
-      paymentMethodID = this.METHOD_PAY_BY_INSTALMENTS;
-    } else if (
-      orderDetails["payment_type"] === this.PAY_BY_INSTALMENTS &&
-      orderDetails["instalments"] === 3
-    ) {
-      paymentMethodID = this.METHOD_PAY_BY_INSTALMENTS;
-    } else if (orderDetails["payment_type"] === this.PAY_NOW) {
-      paymentMethodID = this.METHOD_TAMARA_PAYNOW;
-    } else if (orderDetails["payment_type"] === this.PAY_LATER) {
-      paymentMethodID = this.METHOD_TAMARA_PAYLATER;
-    }
-
-    try {
-      if (paymentMethodID) {
-        Transaction.wrap(function () {
-          collections.forEach(order.getPaymentInstruments(), function (item) {
-            order.removePaymentInstrument(item);
-          });
-
-          var orderPaymentInstrument = order.createPaymentInstrument(
-            paymentMethodID,
-            order.totalGrossPrice
-          );
-
-          if (
-            !PaymentManager.getPaymentMethod(paymentMethodID).paymentProcessor
-          ) {
-            return _this
-              .getTamaraLogger()
-              .error("Can't get payment processor. Need Admin to check soon");
-          }
-
-          var paymentProcessor =
-            PaymentManager.getPaymentMethod(
-              paymentMethodID
-            ).getPaymentProcessor();
-
-          orderPaymentInstrument.paymentTransaction.setTransactionID(
-            order.getOrderNo()
-          );
-          orderPaymentInstrument.paymentTransaction.setPaymentProcessor(
-            paymentProcessor
-          );
-
-          if (orderDetails["payment_type"] === _this.PAY_BY_INSTALMENTS) {
-            orderPaymentInstrument.paymentTransaction.custom.tamaraInstalmentNumber =
-              orderDetails["instalments"].toString();
-          }
-        });
-      }
-    } catch (e) {
-      var a = e;
-      var b = a;
-      _this
-        .getTamaraLogger()
-        .error(
-          "Can't update the order details after Authorized success. Need Admin to check soon"
-        );
-    }
   },
 
   /**
@@ -809,79 +598,8 @@ var tamaraHelperObj = {
   },
 
   /**
-   * Get supported payment types
-   * @param {string} source - the source Controller request this function - for tracking purpose
-   * @return object
-   */
-  fetchSupportedPayments: function () {
-    const CustomObjectMgr = require("dw/object/CustomObjectMgr");
-    const Transaction = require("dw/system/Transaction");
-    const tamaraServicePaymentTypes = require("*/cartridge/scripts/services/tamaraServicePaymentTypes");
-
-    var paymentTypes = CustomObjectMgr.queryCustomObjects(
-      tamaraHelperObj.TAMARA_PAYMENTTYPES_OBJECT,
-      "",
-      "creationDate ASC"
-    )
-      .asList()
-      .toArray();
-
-    // Delete the exsting objects of they are created since more than 30 mins before
-    if (
-      paymentTypes.length > 0 &&
-      (new Date().getTime() - paymentTypes[0].lastModified.getTime()) /
-        (1000 * 60) >=
-        30
-    ) {
-      Transaction.wrap(() =>
-        paymentTypes.forEach((paymentType) =>
-          CustomObjectMgr.remove(paymentType)
-        )
-      );
-      paymentTypes = [];
-    }
-
-    //If no any existing objects, we fetch the latest object from Tamara API
-    if (paymentTypes.length === 0) {
-      const latestPaymentTypes = tamaraServicePaymentTypes.initService();
-      Transaction.wrap(() => {
-        latestPaymentTypes.forEach((paymentType) => {
-          const paymentTypeName = paymentType["name"];
-
-          if ("PAY_BY_INSTALMENTS" === paymentTypeName) {
-            const supportedInstalments = paymentType["supported_instalments"];
-            supportedInstalments.forEach((supportedInstalment) => {
-              if (supportedInstalment["instalments"] === 3) {
-                supportedInstalment["name"] = this.METHOD_TAMARA_INSTALMENTS;
-                let type = CustomObjectMgr.createCustomObject(
-                  tamaraHelperObj.TAMARA_PAYMENTTYPES_OBJECT,
-                  this.METHOD_TAMARA_INSTALMENTS
-                );
-                type.getCustom()["content"] =
-                  JSON.stringify(supportedInstalment);
-                paymentTypes.push(type);
-              } else if (supportedInstalment["instalments"] === 6) {
-                supportedInstalment["name"] = this.METHOD_TAMARA_6_INSTALMENTS;
-                let type = CustomObjectMgr.createCustomObject(
-                  tamaraHelperObj.TAMARA_PAYMENTTYPES_OBJECT,
-                  this.METHOD_TAMARA_6_INSTALMENTS
-                );
-                type.getCustom()["content"] =
-                  JSON.stringify(supportedInstalment);
-                paymentTypes.push(type);
-              }
-            });
-          }
-        });
-      });
-    }
-
-    return paymentTypes;
-  },
-
-  /**
    * Get available payment types
-   * @param {string} source - the source Controller request this function - for tracking purpose
+   * @param {object} data - payment data
    * @return object
    */
   fetchAvailablePayments: function (data) {
@@ -895,7 +613,7 @@ var tamaraHelperObj = {
       isEnableTamaraPay: false,
       isEnablePaynow: false,
       isEnableInstalments: false,
-      is6InstalmentsEnabled: false,
+      payByInstalmentOptions: []
     };
 
     if (data["phone_number"]) {
@@ -948,21 +666,13 @@ var tamaraHelperObj = {
           if (
             available_payment_label["payment_type"] ===
               this.PAY_BY_INSTALMENTS &&
-            available_payment_label["instalment"] === 3
+            available_payment_label["instalment"] !== 0
           ) {
             paymentTypes.isEnableInstalments = true;
-            paymentTypes[this.METHOD_TAMARA_INSTALMENTS] =
-              available_payment_label[langDesc];
-          }
-
-          if (
-            available_payment_label["payment_type"] ===
-              this.PAY_BY_INSTALMENTS &&
-            available_payment_label["instalment"] === 6
-          ) {
-            paymentTypes.is6InstalmentsEnabled = true;
-            paymentTypes[this.METHOD_TAMARA_6_INSTALMENTS] =
-              available_payment_label[langDesc];
+            paymentTypes.payByInstalmentOptions.push({
+              instalments: available_payment_label["instalment"].toFixed(0),
+              description: available_payment_label[langDesc]
+            });
           }
         }
       );

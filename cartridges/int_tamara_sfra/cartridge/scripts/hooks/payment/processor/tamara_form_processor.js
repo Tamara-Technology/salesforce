@@ -14,6 +14,10 @@ function processForm(req, paymentForm, viewFormData) {
         htmlName: paymentForm.paymentMethod.value,
     };
 
+    viewData.paymentInformation = {
+        instalments: paymentForm.instalments.value
+    }
+
     return {
         error: false,
         viewData: viewData,
