@@ -442,6 +442,28 @@ var tamaraHelperObj = {
       tamaraServiceOrderDetail.initService(order, true);
     }
 
+    // Check if order in SFCC has status failed. Then we need cancel tamara order
+    if (Order.ORDER_STATUS_FAILED === order.getStatus().getValue()) {
+      const tamaraOrderDetail = tamaraServiceOrderDetail.initService(order, false);
+      const requestObject = {
+        comment: 'Cancel the Tamara order because the SFCC order has a status of FAILED',
+        amount: order.totalGrossPrice.getValue()
+      }
+      if (tamaraOrderDetail.status === 'authorised') {
+        // Call Cancel API
+        const tamaraServiceCancel = require('*/cartridge/scripts/services/tamaraServiceCancel');
+        tamaraServiceCancel.initService(order, requestObject, requestObject.comment);
+      }
+
+      if (tamaraOrderDetail.status === 'fully_captured') {
+        // Call Refund API
+        const tamaraServiceRefund = require('*/cartridge/scripts/services/tamaraServiceRefund');
+        tamaraServiceRefund.initService(order, requestObject, requestObject.comment);
+      }
+
+      return false;
+    }
+
     // Places the order if not placed yet
     if (Order.ORDER_STATUS_CREATED === order.getStatus().getValue()) {
       var placeOrderResult = COHelpers.placeOrder(order, {

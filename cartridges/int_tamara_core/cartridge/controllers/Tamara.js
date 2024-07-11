@@ -45,7 +45,16 @@ server.get("Success", server.middleware.https, function (req, res, next) {
       );
     }
 
-    tamaraHelper.placeOrder(req, order, "Tamara-Success");
+    const result = tamaraHelper.placeOrder(req, order, "Tamara-Success");
+
+    if (!result) {
+      res.redirect(
+        URLUtils.url(
+          "Cart-Show",
+        ).toString()
+      );
+      return next();
+    }
     // SFRA 6.0 change
     /* res.redirect(URLUtils.url(
             'Order-Confirm',
