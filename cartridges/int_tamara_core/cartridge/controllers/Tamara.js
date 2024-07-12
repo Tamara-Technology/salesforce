@@ -50,7 +50,7 @@ server.get("Success", server.middleware.https, function (req, res, next) {
     if (!result) {
       res.redirect(
         URLUtils.url(
-          "Cart-Show",
+          "Cart-Show"
         ).toString()
       );
       return next();

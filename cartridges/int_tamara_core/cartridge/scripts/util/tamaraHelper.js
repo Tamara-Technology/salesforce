@@ -430,7 +430,7 @@ var tamaraHelperObj = {
     const Order = require("dw/order/Order");
 
     // authorised the order if not yet
-    if (order.custom.tamaraPaymentStatus !== "authorised" && order.custom.tamaraPaymentStatus !== "fully_captured") {
+    if (order.custom.tamaraPaymentStatus !== "authorised" && order.custom.tamaraPaymentStatus !== "fully_captured" && order.custom.tamaraPaymentStatus !== "fully_refunded") {
       tamaraServiceAuthorised.initService(order);
       Transaction.wrap(function () {
         order.trackOrderChange(
