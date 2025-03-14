@@ -389,7 +389,7 @@ var tamaraHelperObj = {
       return (
         `<tamara-widget type="tamara-summary" amount="` +
         currentBasket.totalGrossPrice.getValue() +
-        `" inline-type="3"></tamara-widget>`
+        `" inline-type="6" config='{"badgePosition":"","showExtraContent":"full","hidePayInX":false}'></tamara-widget>`
       );
     }
 
