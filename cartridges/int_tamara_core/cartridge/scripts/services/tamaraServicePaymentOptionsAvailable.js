@@ -1,28 +1,31 @@
-var Resource = require("dw/web/Resource");
-var URLUtils = require("dw/web/URLUtils");
-var Transaction = require("dw/system/Transaction");
 var tamaraHelper = require("*/cartridge/scripts/util/tamaraHelper");
 
 /* eslint no-var: off */
 var tamaraServicePaymentOptionsAvailable = {
   /**
-   * Create Payment Options Available Object Request for Tamara's Checkout process
-   * @param {string} orderNumber - The current order's number
-   * @return {Object} returns an object or throw an error message
+   * Create eligibility request payload for Tamara's Pre-Checkout API
+   * @param {object} data - order and customer data
+   * @return {Object} request payload
    */
   initPaymentAvailablePaymentObject: function (data) {
     return {
-      country: tamaraHelper.getCurrentCountryCode(), // 'US'
-      order_value: data["order_value"],
-      phone_number: data["phone_number"],
-      is_mobile: true,
+      order: {
+        amount: data.order.amount,
+        currency: data.order.currency,
+      },
+      customer: {
+        phone: tamaraHelper.formatPhoneWithCountryCode(
+          data.customer.phone_number
+        ),
+        email: data.customer.email || "precheck-fallback@example.com",
+      },
     };
   },
 
   /**
-   * GET Payment Options Available base on Order
-   * @param {dw.order.Order} order - The current order's number
-   * @return {Object} returns an object or throw an error message
+   * Check customer eligibility for Tamara payment
+   * @param {object} data - order and customer data
+   * @return {Object} returns eligibility response or defaults to eligible on timeout
    */
   initService: function (data) {
     const service = tamaraHelper.getService(
@@ -40,9 +43,43 @@ var tamaraServicePaymentOptionsAvailable = {
       tamaraServicePaymentOptionsAvailable.initPaymentAvailablePaymentObject(
         data
       );
-    const callResult = service.call(JSON.stringify(requestObject));
+
+    const requestPayload = JSON.stringify(requestObject);
+
+    tamaraHelper.getTamaraLogger().info(
+      "Tamara eligibility API request payload: {0}",
+      requestPayload
+    );
+
+    const callResult = service.call(requestPayload);
+
+    tamaraHelper.getTamaraLogger().info(
+      "Tamara eligibility API raw result. Status: {0}, OK: {1}, Error: {2}, Response: {3}",
+      callResult.getStatus(),
+      callResult.isOk(),
+      callResult.getErrorMessage(),
+      callResult.getMsg() ||
+        (callResult.object ? JSON.stringify(callResult.object) : "")
+    );
 
     if (!callResult.isOk()) {
+      if (tamaraHelper.isServiceTimeout(callResult)) {
+        tamaraHelper.getTamaraLogger().warn(
+          "Tamara eligibility API timed out. Status: {0}, Error: {1}, Response: {2}. Showing Tamara as available.",
+          callResult.getStatus(),
+          callResult.getErrorMessage(),
+          callResult.getMsg()
+        );
+        return { is_eligible: true };
+      }
+
+      tamaraHelper.getTamaraLogger().error(
+        "Tamara eligibility API failed. Status: {0}, Error: {1}, Response: {2}",
+        callResult.getStatus(),
+        callResult.getErrorMessage(),
+        callResult.getMsg()
+      );
+
       throw new Error(
         "Call error code " +
           callResult.getError().toString() +
@@ -61,6 +98,11 @@ var tamaraServicePaymentOptionsAvailable = {
           tamaraHelper.SERVICE.CHECKOUT.PAYMENT_OPTIONS_AVAIABLE
       );
     }
+
+    tamaraHelper.getTamaraLogger().info(
+      "Tamara eligibility API response: {0}",
+      JSON.stringify(callResult.object)
+    );
 
     return callResult.object;
   },

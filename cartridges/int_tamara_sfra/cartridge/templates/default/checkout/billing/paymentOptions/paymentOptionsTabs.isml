@@ -5,37 +5,33 @@
     assets.addCss('/css/checkout/tamaraPayment.css');
 
     var tamaraWidgetPublicKey = tamaraHelper.getTamaraWidgetPublicKey();
+    var tamara = pdict.tamara || (pdict.order && pdict.order.tamara) || tamaraHelper.getDefaultPaymentTypes();
 </isscript>
 
-<isif condition="${pdict.tamara.isSingleCheckout}">
+<isif condition="${tamara.isSingleCheckout}">
     <script defer type="text/javascript" src="${tamaraHelper.getWidgetJSURL()}"></script>
 <iselse/>
     <script charset="utf-8" src="https://cdn.tamara.co/widget/installment-plan.min.js"></script>
 </isif>
 
 <isset name="tamaraHelper" value="${tamaraHelper}" scope="page" />
+<isset name="tamara" value="${tamara}" scope="page" />
 
 <isloop items="${pdict.order.billing.payment.applicablePaymentMethods}" var="paymentOption">
-    <isif condition="${paymentOption.ID === tamaraHelper.METHOD_CREDIT_CARD}">
+    <isif condition="${paymentOption.ID === tamaraHelper.METHOD_CREDIT_CARD || paymentOption.ID === 'CREDIT'}">
         <isinclude template="checkout/billing/paymentOptions/creditCardTab" />
         <div class="container">
             <isinclude template="checkout/billing/paymentOptions/creditCardContent" />
         </div>
-    <iselseif condition="${paymentOption.ID === tamaraHelper.METHOD_TAMARA_PAY && tamaraHelper.getEnablementStatus() && pdict.tamara
-                             .isEnableTamaraPay}" />
-        <isinclude template="checkout/billing/paymentOptions/tamaraTab" />
-        <div class="container">
-            <isinclude template="checkout/billing/paymentOptions/tamaraPayContent" />
-        </div>
-    <iselseif condition="${paymentOption.ID === tamaraHelper.METHOD_TAMARA_PAYNOW && tamaraHelper.getEnablementStatus() && pdict.tamara
+    <iselseif condition="${paymentOption.ID === tamaraHelper.METHOD_TAMARA_PAYNOW && tamaraHelper.getEnablementStatus() && tamara
                              .isEnablePaynow}" />
         <isinclude template="checkout/billing/paymentOptions/tamaraTab" />
         <div class="container">
             <isinclude template="checkout/billing/paymentOptions/tamaraPaynowContent" />
         </div>
-    <iselseif condition="${paymentOption.ID === tamaraHelper.METHOD_PAY_BY_INSTALMENTS && tamaraHelper.getEnablementStatus() && pdict.tamara
+    <iselseif condition="${paymentOption.ID === tamaraHelper.METHOD_PAY_BY_INSTALMENTS && tamaraHelper.getEnablementStatus() && tamara
                              .isEnableInstalments}" />
-        <isloop items="${pdict.tamara.payByInstalmentOptions}" var="payByInstalmentOption" status="loopstatus">
+        <isloop items="${tamara.payByInstalmentOptions}" var="payByInstalmentOption" status="loopstatus">
             <isset name="tamaraInstalmentOptionID" value="${paymentOption.ID + '-' + payByInstalmentOption.instalments}" scope="page" />
             <isinclude template="checkout/billing/paymentOptions/tamaraInstalmentTab" />
             <div class="container">
@@ -45,7 +41,19 @@
     </isif>
 </isloop>
 
-<isif condition="${pdict.tamara.isSingleCheckout}">
+<isscript>
+        var tamaraPaymentOption = {
+            ID: tamaraHelper.METHOD_TAMARA_PAY,
+            name: 'Pay with Tamara'
+        };
+    </isscript>
+    <isset name="paymentOption" value="${tamaraPaymentOption}" scope="page" />
+    <isinclude template="checkout/billing/paymentOptions/tamaraTab" />
+    <div class="container tamara-pay-content-wrapper tamara-pay-content"${!tamara.isEnableTamaraPay ? ' style="display:none"' : ''}>
+        <isinclude template="checkout/billing/paymentOptions/tamaraPayContent" />
+    </div>
+
+<isif condition="${tamara.isSingleCheckout}">
     <script>
         window.tamaraWidgetConfig = {
             lang: "${tamaraHelper.getCurrentLangCode()}",

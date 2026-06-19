@@ -5,6 +5,13 @@ const billing = require("./billing");
 
 module.exports = {
   updateCheckoutView: function () {
+    // Run Tamara update first — only trust order.tamara from AJAX, never page-load globals
+    $("body").on("checkout:updateCheckoutView", function (e, data) {
+      if (data.order && data.order.tamara) {
+        billing.methods.updateTamaraPayment(data.order);
+      }
+    });
+
     $("body").on("checkout:updateCheckoutView", function (e, data) {
       shippingHelpers.methods.updateMultiShipInformation(data.order);
       summaryHelpers.updateTotals(data.order.totals);
@@ -27,28 +34,50 @@ module.exports = {
         data.options
       );
       billing.methods.updatePaymentInformation(data.order);
-      billing.methods.updateTamaraPayment(data.order);
     });
+  },
+
+  refreshTamaraOnPaymentStage: function () {
+    var checkoutMain = document.getElementById("checkout-main");
+
+    if (!checkoutMain || typeof MutationObserver === "undefined") {
+      return;
+    }
+
+    var observer = new MutationObserver(function () {
+      if (checkoutMain.getAttribute("data-checkout-stage") === "payment") {
+        billing.methods.refreshTamaraEligibility();
+      }
+    });
+
+    observer.observe(checkoutMain, {
+      attributes: true,
+      attributeFilter: ["data-checkout-stage"],
+    });
+
+    if (checkoutMain.getAttribute("data-checkout-stage") === "payment") {
+      billing.methods.refreshTamaraEligibility();
+    }
   },
 
   selectPayment: function () {
     $(".payment-options .nav-item .nav-link").on("click", function () {
       if (!$(this).hasClass("collapsed")) return;
 
-      // remove all active class
-      $(`.payment-options .tab-pane`).removeClass("show").removeClass("active");
+      $(".payment-options .tab-pane").removeClass("show").removeClass("active");
       $(".payment-options .nav-item .nav-link").addClass("collapsed");
       $(".payment-options .nav-item .nav-link").attr("data-toggle", "collapse");
 
-      $(this).removeClass("collapsed");
-      setTimeout(() => {
-        if ($(this).hasClass("collapsed")) {
-          $(this).removeClass("collapsed");
+      var $link = $(this);
+      $link.removeClass("collapsed");
+      setTimeout(function () {
+        if ($link.hasClass("collapsed")) {
+          $link.removeClass("collapsed");
         }
-        $(this).attr("data-toggle", "none");
+        $link.attr("data-toggle", "none");
       }, 100);
 
-      const targetId = $(this).attr("href");
+      var targetId = $link.attr("href");
       $(targetId).addClass("active");
     });
   },

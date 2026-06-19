@@ -21,6 +21,35 @@ function applicablePaymentMethods(paymentMethods) {
 }
 
 /**
+ * Ensure Tamara payment method is available for checkout rendering
+ * @param {Array} methods - applicable payment methods
+ * @returns {Array} payment methods including Tamara when enabled
+ */
+function ensureTamaraPaymentMethod(methods) {
+  var PaymentMgr = require("dw/order/PaymentMgr");
+  var paymentMethods = methods || [];
+  var hasTamara = paymentMethods.some(function (method) {
+    return method.ID === tamaraHelper.METHOD_TAMARA_PAY;
+  });
+
+  if (hasTamara || !tamaraHelper.getEnablementStatus()) {
+    return paymentMethods;
+  }
+
+  var tamaraPaymentMethod = PaymentMgr.getPaymentMethod(
+    tamaraHelper.METHOD_TAMARA_PAY
+  );
+
+  paymentMethods.push({
+    ID: tamaraHelper.METHOD_TAMARA_PAY,
+    name: tamaraPaymentMethod ? tamaraPaymentMethod.name : "Pay with Tamara",
+    image: tamaraPaymentMethod ? tamaraPaymentMethod.image : null,
+  });
+
+  return paymentMethods;
+}
+
+/**
  * Creates an array of objects containing selected payment information
  * @param {dw.util.ArrayList<dw.order.PaymentInstrument>} selectedPaymentInstruments - ArrayList
  *      of payment instruments that the user is using to pay for the current basket
@@ -79,9 +108,9 @@ function Payment(currentBasket, currentCustomer, countryCode) {
 
   var paymentInstruments = currentBasket.paymentInstruments;
 
-  this.applicablePaymentMethods = paymentMethods
-    ? applicablePaymentMethods(paymentMethods)
-    : null;
+  this.applicablePaymentMethods = ensureTamaraPaymentMethod(
+    paymentMethods ? applicablePaymentMethods(paymentMethods) : []
+  );
 
   this.selectedPaymentInstruments = paymentInstruments
     ? getSelectedPaymentInstruments(paymentInstruments)

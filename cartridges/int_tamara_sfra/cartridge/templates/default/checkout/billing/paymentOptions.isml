@@ -1,0 +1,25 @@
+<isscript>
+    var tamaraHelper = require('*/cartridge/scripts/util/tamaraHelper');
+    var tamaraCheckoutConfig = (pdict.order && pdict.order.tamara) || tamaraHelper.getDefaultPaymentTypes();
+    var tamaraPaymentLabelTitle = tamaraCheckoutConfig.paymentLabelTitle || tamaraHelper.getPaymentLabel().title;
+</isscript>
+
+<div class="form-nav billing-nav payment-information"
+     data-payment-method-id="CREDIT_CARD"
+     data-is-new-payment="${pdict.customer.registeredUser && pdict.customer.customerPaymentInstruments.length ? false : true}"
+>
+    <ul class="nav nav-tabs payment-options" role="tablist">
+        <isinclude template="checkout/billing/paymentOptions/paymentOptionsTabs" />
+    </ul>
+</div>
+<div class="credit-card-selection-new" >
+    <div class="tab-content">
+        <isinclude template="checkout/billing/paymentOptions/paymentOptionsContent" />
+    </div>
+</div>
+
+<div id="tamara-checkout-config" class="d-none"
+    data-logo="${URLUtils.staticURL('/images/tamaraLogo.svg')}"
+    data-payment-method-field="${pdict.forms.billingForm.paymentMethod.htmlName}"
+    data-payment-label-title="${tamaraPaymentLabelTitle}">
+</div>

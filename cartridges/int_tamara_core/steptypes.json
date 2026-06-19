@@ -3,8 +3,9 @@
         "script-module-step": [
             {
                 "@type-id": "custom.CaptureShippedOrder",
+                "@supports-organization-context": "false",
+                "@supports-site-context": "true",
                 "module": "int_tamara_core/cartridge/scripts/jobs/CaptureShippedOrder",
-                "supports-organization-context": false,
                 "function": "execute",
                 "parameters": {
                     "parameters": [
