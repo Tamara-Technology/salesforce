@@ -31,6 +31,25 @@ var tamaraHelperObj = {
 
   TAMARA_CACHE_API_OBJECT: "TamaraCachePaymentOptionsPreCheckAPI",
 
+  PAYMENT_LABELS: {
+    SA: {
+      en: {
+        title: "Tamara - Monthly Payments. Sharia Compliant.",
+      },
+      ar: {
+        title: "تمارا - دفعات شهرية. متوافقة مع الشريعة",
+      },
+    },
+    AE: {
+      en: {
+        title: "Tamara - Monthly Payments.",
+      },
+      ar: {
+        title: "تمارا - دفعات شهرية",
+      },
+    },
+  },
+
   SERVICE: {
     CHECKOUT: {
       SESSION: "tamara.checkout.session",
@@ -104,6 +123,56 @@ var tamaraHelperObj = {
    */
   getCurrentLangCode: function () {
     return dwutil.Locale.getLocale(request.getLocale()).getLanguage();
+  },
+
+  /**
+   * Dial codes for supported Tamara countries
+   */
+  COUNTRY_DIAL_CODES: {
+    SA: "966",
+    AE: "971",
+  },
+
+  /**
+   * Ensure phone number includes country dial code for Tamara API
+   * @param {string} phone - raw phone number from checkout
+   * @returns {string|null} phone with country code prefix
+   */
+  formatPhoneWithCountryCode: function (phone) {
+    if (!phone) {
+      return phone;
+    }
+
+    var digits = phone.replace(/\D/g, "");
+
+    if (!digits) {
+      return phone;
+    }
+
+    if (digits.indexOf("00") === 0) {
+      digits = digits.substring(2);
+    }
+
+    var countryCode;
+    var knownDialCode;
+    for (countryCode in this.COUNTRY_DIAL_CODES) {
+      knownDialCode = this.COUNTRY_DIAL_CODES[countryCode];
+      if (digits.indexOf(knownDialCode) === 0) {
+        return digits;
+      }
+    }
+
+    var dialCode = this.COUNTRY_DIAL_CODES[this.getCurrentCountryCode()];
+
+    if (!dialCode) {
+      return digits;
+    }
+
+    if (digits.charAt(0) === "0") {
+      digits = digits.substring(1);
+    }
+
+    return dialCode + digits;
   },
 
   /**
@@ -321,36 +390,140 @@ var tamaraHelperObj = {
   },
 
   /**
-   * Get allows to make the payment from Tamara
-   * @param {dw.util.Collection} paymentTypes - The list of Payment Types
-   * Array of (
-      {
-      "payment_type": "PAY_NOW",
-      "instalment": 0,
-      "description": "Pay in full using Tamara",
-      "description_ar": "ادفعها على دفعة واحدة باستعمال تمارا"
-      }
-   * )
-   * @returns {object} an Min/Max Object base on the input
+   * Detect whether a service call failed due to timeout
+   * @param {dw.svc.Result} callResult - service call result
+   * @returns {boolean} true when the failure was caused by a timeout
+   */
+  isServiceTimeout: function (callResult) {
+    var errorMessage = (callResult.getErrorMessage() || "").toLowerCase();
+    var unavailableMessage = (callResult.getMsg() || "").toLowerCase();
+    var combinedError = errorMessage + " " + unavailableMessage;
+
+    if (
+      combinedError.indexOf("scriptingexception") !== -1 ||
+      combinedError.indexOf("typeerror") !== -1
+    ) {
+      return false;
+    }
+
+    return (
+      combinedError.indexOf("timed out") !== -1 ||
+      combinedError.indexOf("time-out") !== -1 ||
+      combinedError.indexOf("request timeout") !== -1 ||
+      combinedError.indexOf("read timed out") !== -1 ||
+      combinedError.indexOf("connection timed out") !== -1 ||
+      combinedError.indexOf("socket timeout") !== -1
+    );
+  },
+
+  /**
+   * Get hard-coded Tamara payment label for the current country and language
+   * @returns {{title: string, subtitle: string}} payment label
+   */
+  getPaymentLabel: function () {
+    var countryCode = this.getCurrentCountryCode();
+    var langCode = this.getCurrentLangCode();
+    var countryLabels =
+      this.PAYMENT_LABELS[countryCode] || this.PAYMENT_LABELS.SA;
+
+    return countryLabels[langCode] || countryLabels.en;
+  },
+
+  /**
+   * Apply payment labels to the payment types object
+   * @param {object} paymentTypes - payment types object to update
+   */
+  applyPaymentLabels: function (paymentTypes) {
+    var paymentLabel = this.getPaymentLabel();
+    var title = paymentLabel.title || "";
+
+    paymentTypes.paymentLabelTitle = title;
+    paymentTypes.paymentLabelSubtitle = paymentLabel.subtitle || "";
+    paymentTypes[this.METHOD_TAMARA_PAY] = title;
+  },
+
+  /**
+   * Build default Tamara payment availability object
+   * @returns {object} payment availability defaults
+   */
+  getDefaultPaymentTypes: function () {
+    return {
+      isEligible: false,
+      isSingleCheckout: true,
+      isEnableTamaraPay: false,
+      isEnablePaynow: false,
+      isEnableInstalments: false,
+      payByInstalmentOptions: [],
+      paymentLabelTitle: "",
+      paymentLabelSubtitle: "",
+    };
+  },
+
+  /**
+   * Apply eligibility result and payment labels to the payment types object
+   * @param {object} paymentTypes - payment types object to update
+   * @param {boolean} isEligible - whether Tamara is eligible
+   */
+  applyEligibilityToPaymentTypes: function (paymentTypes, isEligible) {
+    paymentTypes.isEligible = isEligible;
+    paymentTypes.isEnableTamaraPay = isEligible;
+    paymentTypes.isEnablePaynow = false;
+    paymentTypes.isEnableInstalments = false;
+    paymentTypes.isSingleCheckout = true;
+
+    if (isEligible) {
+      this.applyPaymentLabels(paymentTypes);
+    }
+  },
+
+  /**
+   * Build cache key for eligibility API responses
+   * @param {object} data - order and customer data
+   * @returns {string|null} cache key
+   */
+  buildEligibilityCacheKey: function (data) {
+    if (!data.customer || !data.customer.phone_number) {
+      return null;
+    }
+
+    return [
+      data.customer.phone_number,
+      data.order.amount,
+      data.order.currency,
+    ].join("_");
+  },
+
+  /**
+   * Get available Tamara payment options for the current basket
+   * @returns {object} Tamara payment availability and labels
    */
   getAvailablePayments: function () {
     var BasketMgr = require("dw/order/BasketMgr");
     var currentBasket = BasketMgr.getCurrentBasket();
 
-    const paymentTypes = this.fetchAvailablePayments({
-      order_value: {
-        amount: currentBasket.totalGrossPrice.value.toFixed(2),
+    if (!currentBasket) {
+      return this.getDefaultPaymentTypes();
+    }
+
+    var phoneNumber = null;
+    if (
+      currentBasket.shipments.length &&
+      currentBasket.shipments[0].shippingAddress
+    ) {
+      phoneNumber = currentBasket.shipments[0].shippingAddress.getPhone();
+      phoneNumber = this.formatPhoneWithCountryCode(phoneNumber);
+    }
+
+    return this.fetchAvailablePayments({
+      order: {
+        amount: parseFloat(currentBasket.totalGrossPrice.value.toFixed(2)),
         currency: currentBasket.totalGrossPrice.currencyCode,
       },
-      phone_number:
-        currentBasket.shipments.length &&
-        currentBasket.shipments[0].shippingAddress
-          ? currentBasket.shipments[0].shippingAddress.getPhone()
-          : null,
-      is_vip: true,
+      customer: {
+        phone_number: phoneNumber,
+        email: currentBasket.customerEmail || null,
+      },
     });
-
-    return paymentTypes;
   },
 
   /**
@@ -389,7 +562,7 @@ var tamaraHelperObj = {
       return (
         `<tamara-widget type="tamara-summary" amount="` +
         currentBasket.totalGrossPrice.getValue() +
-        `" inline-type="6" config='{"badgePosition":"","showExtraContent":"full","hidePayInX":false}'></tamara-widget>`
+        `" inline-type="3"></tamara-widget>`
       );
     }
 
@@ -620,29 +793,23 @@ var tamaraHelperObj = {
   },
 
   /**
-   * Get available payment types
-   * @param {object} data - payment data
-   * @return object
+   * Get available payment types from Tamara eligibility API
+   * @param {object} data - order and customer data
+   * @return {object} payment availability object
    */
   fetchAvailablePayments: function (data) {
     const CustomObjectMgr = require("dw/object/CustomObjectMgr");
     const Transaction = require("dw/system/Transaction");
     const tamaraServicePaymentOptionsAvailable = require("*/cartridge/scripts/services/tamaraServicePaymentOptionsAvailable");
     var cachePreCheckAPI;
+    var paymentTypes = this.getDefaultPaymentTypes();
+    var cacheKey = this.buildEligibilityCacheKey(data);
 
-    paymentTypes = {
-      isSingleCheckout: false,
-      isEnableTamaraPay: false,
-      isEnablePaynow: false,
-      isEnableInstalments: false,
-      payByInstalmentOptions: []
-    };
-
-    if (data["phone_number"]) {
+    if (cacheKey) {
       cachePreCheckAPI = CustomObjectMgr.queryCustomObject(
         tamaraHelperObj.TAMARA_CACHE_API_OBJECT,
         "custom.ID = {0}",
-        data["phone_number"]
+        cacheKey
       );
 
       if (
@@ -651,70 +818,72 @@ var tamaraHelperObj = {
           (1000 * 60) >=
           5
       ) {
-        Transaction.wrap(() => {
+        Transaction.wrap(function () {
           CustomObjectMgr.remove(cachePreCheckAPI);
         });
         cachePreCheckAPI = null;
       }
     }
 
-    if (!cachePreCheckAPI) {
-      const availablePaymentsResponse =
-        tamaraServicePaymentOptionsAvailable.initService(data);
+    if (cachePreCheckAPI) {
+      paymentTypes = JSON.parse(cachePreCheckAPI.getCustom()["content"]);
 
-      paymentTypes.isSingleCheckout =
-        availablePaymentsResponse["single_checkout_enabled"];
-
-      const langDesc = tamaraHelperObj.getCurrentLangCode() === 'ar' ? 'description_ar' : 'description_en';
-
-      availablePaymentsResponse.available_payment_labels.forEach(
-        (available_payment_label) => {
-          if (available_payment_label["payment_type"] === this.PAY_NOW) {
-            paymentTypes.isEnablePaynow = true;
-            paymentTypes[this.METHOD_TAMARA_PAYNOW] =
-              available_payment_label[langDesc];
-          }
-
-          if (
-            available_payment_label["payment_type"] ===
-              this.PAY_BY_INSTALMENTS &&
-            available_payment_label["instalment"] === 0
-          ) {
-            paymentTypes.isEnableTamaraPay = true;
-            paymentTypes[this.METHOD_TAMARA_PAY] =
-              available_payment_label[langDesc];
-          }
-
-          if (
-            available_payment_label["payment_type"] ===
-              this.PAY_BY_INSTALMENTS &&
-            available_payment_label["instalment"] !== 0
-          ) {
-            paymentTypes.isEnableInstalments = true;
-            paymentTypes.payByInstalmentOptions.push({
-              instalments: available_payment_label["instalment"].toFixed(0),
-              description: available_payment_label[langDesc]
-            });
-          }
-        }
-      );
-
-      if (data["phone_number"]) {
-        Transaction.wrap(function () {
-          cachePreCheckAPI = CustomObjectMgr.createCustomObject(
-            tamaraHelperObj.TAMARA_CACHE_API_OBJECT,
-            data["phone_number"]
-          );
-
-          cachePreCheckAPI.getCustom()["content"] =
-            JSON.stringify(paymentTypes);
-        });
+      if (paymentTypes.isEligible) {
+        this.applyPaymentLabels(paymentTypes);
       }
+
+      this.getTamaraLogger().info(
+        "Tamara eligibility API cache hit for key {0}. Cached result: {1}",
+        cacheKey,
+        JSON.stringify({
+          isEligible: paymentTypes.isEligible,
+          isEnableTamaraPay: paymentTypes.isEnableTamaraPay,
+        })
+      );
 
       return paymentTypes;
     }
 
-    return JSON.parse(cachePreCheckAPI.getCustom()["content"]);
+    if (!data.customer || !data.customer.phone_number) {
+      this.getTamaraLogger().info(
+        "Tamara eligibility API skipped: phone number not available yet"
+      );
+      return paymentTypes;
+    }
+
+    try {
+      var eligibilityResponse =
+        tamaraServicePaymentOptionsAvailable.initService(data);
+      this.applyEligibilityToPaymentTypes(
+        paymentTypes,
+        eligibilityResponse.is_eligible === true
+      );
+
+      this.getTamaraLogger().info(
+        "Tamara eligibility applied. is_eligible={0}, isEnableTamaraPay={1}",
+        eligibilityResponse.is_eligible,
+        paymentTypes.isEnableTamaraPay
+      );
+    } catch (e) {
+      this.getTamaraLogger().error(
+        "Tamara eligibility API error: {0}",
+        e.message
+      );
+      this.applyEligibilityToPaymentTypes(paymentTypes, false);
+    }
+
+    if (cacheKey) {
+      Transaction.wrap(function () {
+        cachePreCheckAPI = CustomObjectMgr.createCustomObject(
+          tamaraHelperObj.TAMARA_CACHE_API_OBJECT,
+          cacheKey
+        );
+
+        cachePreCheckAPI.getCustom()["content"] = JSON.stringify(paymentTypes);
+      });
+    }
+
+    return paymentTypes;
   },
 };
 

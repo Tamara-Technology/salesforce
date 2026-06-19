@@ -7,7 +7,7 @@
     </service-credential>
 
     <service-credential service-credential-id="tamara.checkout.paymentoptionsavailability.cred">
-        <url>/checkout/payment-options-pre-check</url>
+        <url>/pre-checkout/v1/eligibility</url>
         <user-id />
         <password masked="true">********</password>
     </service-credential>
@@ -64,6 +64,16 @@
         <cb-millis>0</cb-millis>
     </service-profile>
 
+    <service-profile service-profile-id="tamara.eligibility.prof">
+        <timeout-millis>200</timeout-millis>
+        <rate-limit-enabled>false</rate-limit-enabled>
+        <rate-limit-calls>0</rate-limit-calls>
+        <rate-limit-millis>0</rate-limit-millis>
+        <cb-enabled>false</cb-enabled>
+        <cb-calls>0</cb-calls>
+        <cb-millis>0</cb-millis>
+    </service-profile>
+
     <service service-id="tamara.checkout.paymenttypes">
         <service-type>HTTP</service-type>
         <enabled>true</enabled>
@@ -82,7 +92,7 @@
         <comm-log-enabled>true</comm-log-enabled>
         <force-prd-enabled>true</force-prd-enabled>
         <mock-mode-enabled>false</mock-mode-enabled>
-        <profile-id>tamara.prof</profile-id>
+        <profile-id>tamara.eligibility.prof</profile-id>
         <credential-id>tamara.checkout.paymentoptionsavailability.cred</credential-id>
     </service>
 
