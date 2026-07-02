@@ -14,4 +14,4 @@ Efficiency: The API has a latency of <100ms, ensuring zero measurable impact on 
 
 ---------------------
 
-With this we can add SFCC specific message for plugin update + API call
+Please update the plugin and try with Pre-Check API.
